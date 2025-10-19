@@ -1,0 +1,168 @@
+/* Main styling */
+.main .block-container {
+    padding-top: 2rem;
+}
+
+/* Header styling */
+h1 {
+    color: #1f77b4;
+    border-bottom: 2px solid #1f77b4;
+    padding-bottom: 0.5rem;
+}
+
+/* Metric cards styling */
+[data-testid="stMetric"] {
+    background-color: #f0f2f6;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #1f77b4;
+}
+
+/* Alert severity colors */
+.alert-critical {
+    background-color: #ff4b4b;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin: 0.25rem 0;
+}
+
+.alert-high {
+    background-color: #ffa64b;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin: 0.25rem 0;
+}
+
+.alert-medium {
+    background-color: #ffd64b;
+    color: black;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin: 0.25rem 0;
+}
+
+.alert-low {
+    background-color: #4bff4b;
+    color: black;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin: 0.25rem 0;
+}
+
+/* Sidebar styling */
+.css-1d391kg {
+    background-color: #f8f9fa;
+}
+
+/* Button styling */
+.stButton button {
+    background-color: #1f77b4;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.3s;
+}
+
+.stButton button:hover {
+    background-color: #1668a1;
+}
+
+/* Tab styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 2rem;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 50px;
+    white-space: pre-wrap;
+    background-color: #f0f2f6;
+    border-radius: 4px 4px 0px 0px;
+    gap: 1px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: #1f77b4;
+    color: white;
+}
+
+/* Dataframe styling */
+.dataframe {
+    border: 1px solid #e6e6e6;
+    border-radius: 0.25rem;
+}
+
+/* Custom classes for security indicators */
+.security-good {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.security-warning {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.security-critical {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Loading spinner customization */
+.stSpinner > div {
+    border-top-color: #1f77b4;
+}
+
+/* Expander styling */
+.streamlit-expanderHeader {
+    font-weight: bold;
+    background-color: #f8f9fa;
+    border-left: 4px solid #1f77b4;
+}
+
+/* Custom footer */
+.footer {
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.8rem;
+    margin-top: 2rem;
+}
+
+/* Risk indicator animations */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.risk-pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Chart container styling */
+.js-plotly-plot .plotly {
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Sidebar navigation highlights */
+.sidebar-nav-item {
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.sidebar-nav-item:hover {
+    background-color: #e9ecef;
+}
+
+.sidebar-nav-item.active {
+    background-color: #1f77b4;
+    color: white;
+}
