@@ -231,372 +231,7 @@ def quantum_resource_manager():
     finally:
         gc.collect()
 
-# --- ENHANCED DATA SOURCES INTEGRATION ---
-
-class AdvancedDataFetcher:
-    """Enhanced data fetcher with more sources and capabilities"""
-    
-    def __init__(self):
-        self.data_cache = {}
-        self.request_headers = {
-            'User-Agent': 'DataPoisoningDefensePlatform/1.0',
-            'Accept': 'application/json'
-        }
-    
-    def fetch_udise_data(self):
-        """Fetch Unified District Information System for Education data (simulated)"""
-        try:
-            # Simulate UDISE+ education data
-            states = ['Maharashtra', 'Tamil Nadu', 'Karnataka', 'Delhi', 'Kerala', 'Gujarat']
-            data = {
-                'State': states,
-                'Total_Schools': np.random.randint(50000, 200000, len(states)),
-                'Enrollment': np.random.randint(1000000, 5000000, len(states)),
-                'Teacher_Count': np.random.randint(50000, 200000, len(states)),
-                'Girls_Enrollment_Ratio': np.random.uniform(0.45, 0.55, len(states)),
-                'Digital_Classrooms': np.random.randint(1000, 50000, len(states))
-            }
-            return pd.DataFrame(data)
-        except Exception as e:
-            st.error(f"Error fetching UDISE data: {e}")
-            return None
-    
-    def fetch_health_data(self):
-        """Fetch health and nutrition data (simulated)"""
-        try:
-            indicators = ['Malnutrition_Rate', 'Immunization_Coverage', 'Institutional_Deliveries', 
-                         'Doctor_Population_Ratio', 'Hospital_Beds_Per_1000']
-            states = ['Bihar', 'UP', 'MP', 'Rajasthan', 'West Bengal', 'Assam']
-            
-            data = []
-            for state in states:
-                for indicator in indicators:
-                    data.append({
-                        'State': state,
-                        'Indicator': indicator,
-                        'Value': np.random.uniform(10, 95),
-                        'Year': 2023
-                    })
-            
-            return pd.DataFrame(data)
-        except Exception as e:
-            st.error(f"Error fetching health data: {e}")
-            return None
-    
-    def fetch_agriculture_data(self):
-        """Fetch agricultural production data (simulated)"""
-        try:
-            crops = ['Rice', 'Wheat', 'Sugarcane', 'Cotton', 'Pulses']
-            states = ['Punjab', 'Haryana', 'UP', 'MP', 'Andhra Pradesh']
-            
-            data = []
-            for crop in crops:
-                for state in states:
-                    data.append({
-                        'Crop': crop,
-                        'State': state,
-                        'Production_Tonnes': np.random.randint(100000, 5000000),
-                        'Area_Hectares': np.random.randint(50000, 2000000),
-                        'Yield_Kg_Hectare': np.random.randint(1000, 5000)
-                    })
-            
-            return pd.DataFrame(data)
-        except Exception as e:
-            st.error(f"Error fetching agriculture data: {e}")
-            return None
-    
-    def fetch_social_welfare_data(self):
-        """Fetch social welfare scheme data (simulated)"""
-        try:
-            schemes = ['PM-KISAN', 'MNREGA', 'PM-JAY', 'NSAP', 'ICDS']
-            data = {
-                'Scheme': schemes,
-                'Beneficiaries_Millions': np.random.randint(50, 500, len(schemes)),
-                'Budget_Crores': np.random.randint(1000, 50000, len(schemes)),
-                'Women_Beneficiaries_Percent': np.random.uniform(40, 60, len(schemes)),
-                'Rural_Coverage_Percent': np.random.uniform(70, 95, len(schemes))
-            }
-            return pd.DataFrame(data)
-        except Exception as e:
-            st.error(f"Error fetching social welfare data: {e}")
-            return None
-
-# --- ADVANCED DATA POISONING DETECTION ---
-
-class AdvancedPoisoningDetector:
-    """Advanced poisoning detection with ensemble methods"""
-    
-    def __init__(self):
-        self.detectors = {
-            'isolation_forest': IsolationForest(contamination=0.1, random_state=42),
-            'local_outlier_factor': None,  # Could be added
-            'autoencoder': None  # Could be added for deep learning approach
-        }
-        self.scaler = StandardScaler()
-        self.detection_history = []
-    
-    def ensemble_detection(self, data):
-        """Use multiple detectors for consensus-based detection"""
-        try:
-            scaled_data = self.scaler.fit_transform(data)
-            
-            # Get predictions from available detectors
-            predictions = []
-            
-            # Isolation Forest
-            iforest_pred = self.detectors['isolation_forest'].fit_predict(scaled_data)
-            predictions.append((iforest_pred == -1).astype(int))
-            
-            # Statistical methods
-            z_scores = np.abs((data - data.mean(axis=0)) / data.std(axis=0))
-            z_anomalies = (z_scores > 3).any(axis=1).astype(int)
-            predictions.append(z_anomalies)
-            
-            # Combine predictions (majority voting)
-            ensemble_pred = np.mean(predictions, axis=0) > 0.5
-            anomaly_indices = np.where(ensemble_pred)[0]
-            
-            # Log detection
-            self.detection_history.append({
-                'timestamp': datetime.now(),
-                'samples_analyzed': len(data),
-                'anomalies_detected': len(anomaly_indices),
-                'detection_rate': len(anomaly_indices) / len(data)
-            })
-            
-            return anomaly_indices
-            
-        except Exception as e:
-            st.error(f"Ensemble detection error: {e}")
-            return np.array([])
-    
-    def temporal_analysis(self, data, timestamps):
-        """Analyze temporal patterns for poisoning detection"""
-        try:
-            if len(data) != len(timestamps):
-                return np.array([])
-            
-            # Calculate rolling statistics
-            if data.shape[1] >= 1:
-                feature_means = np.array([np.mean(data[max(0, i-10):i+1], axis=0) 
-                                        for i in range(len(data))])
-                feature_stds = np.array([np.std(data[max(0, i-10):i+1], axis=0) 
-                                      for i in range(len(data))])
-                
-                # Detect sudden changes
-                changes = np.abs(data - feature_means) / (feature_stds + 1e-8)
-                temporal_anomalies = np.where((changes > 2).any(axis=1))[0]
-                
-                return temporal_anomalies
-            
-            return np.array([])
-            
-        except Exception as e:
-            st.error(f"Temporal analysis error: {e}")
-            return np.array([])
-    
-    def explain_anomalies(self, data, anomaly_indices):
-        """Provide explanations for detected anomalies"""
-        explanations = []
-        
-        for idx in anomaly_indices[:10]:  # Limit to first 10 for performance
-            explanation = {
-                'sample_index': idx,
-                'reasons': []
-            }
-            
-            # Z-score analysis
-            z_scores = np.abs((data - data.mean(axis=0)) / data.std(axis=0))
-            high_z_features = np.where(z_scores[idx] > 3)[0]
-            if len(high_z_features) > 0:
-                explanation['reasons'].append(f"High Z-scores in features: {high_z_features.tolist()}")
-            
-            # Distance from cluster center
-            if data.shape[0] > 1:
-                centroid = np.mean(data, axis=0)
-                distance = np.linalg.norm(data[idx] - centroid)
-                avg_distance = np.mean([np.linalg.norm(x - centroid) for x in data])
-                if distance > 2 * avg_distance:
-                    explanation['reasons'].append(f"Far from data centroid (distance: {distance:.2f})")
-            
-            explanations.append(explanation)
-        
-        return explanations
-
-# --- ADVANCED DEFENSE MECHANISMS ---
-
-class AdvancedDefenseMechanisms:
-    """Advanced defense mechanisms with state-of-the-art techniques"""
-    
-    def __init__(self):
-        self.defense_history = []
-    
-    def certified_robustness(self, data, labels, certification_method='randomized_smoothing'):
-        """Implement certified robustness defenses"""
-        try:
-            if certification_method == 'randomized_smoothing':
-                # Simulate randomized smoothing by adding noise and taking majority vote
-                noisy_predictions = []
-                for _ in range(5):
-                    noise = np.random.normal(0, 0.1, data.shape)
-                    noisy_data = data + noise
-                    # In practice, you'd get predictions from model
-                    # For simulation, we'll just return the data
-                    noisy_predictions.append(noisy_data)
-                
-                certified_data = np.median(noisy_predictions, axis=0)
-                return certified_data, labels
-                
-            else:
-                return data, labels
-                
-        except Exception as e:
-            st.error(f"Certified robustness error: {e}")
-            return data, labels
-    
-    def data_augmentation_defense(self, data, labels, augmentation_ratio=0.1):
-        """Use data augmentation to dilute poisoning effects"""
-        try:
-            augmented_data = []
-            augmented_labels = []
-            
-            # Add original data
-            augmented_data.extend(data)
-            augmented_labels.extend(labels)
-            
-            # Generate augmented samples
-            n_augment = int(len(data) * augmentation_ratio)
-            for _ in range(n_augment):
-                # Random selection and perturbation
-                idx = np.random.randint(0, len(data))
-                noise = np.random.normal(0, 0.05, data.shape[1])
-                augmented_sample = data[idx] + noise
-                
-                augmented_data.append(augmented_sample)
-                augmented_labels.append(labels[idx])
-            
-            return np.array(augmented_data), np.array(augmented_labels)
-            
-        except Exception as e:
-            st.error(f"Data augmentation error: {e}")
-            return data, labels
-    
-    def anomaly_aware_training(self, data, labels, anomaly_scores):
-        """Weight samples based on anomaly scores during training"""
-        try:
-            # Convert anomaly scores to sample weights
-            weights = 1 / (1 + anomaly_scores)
-            weights = weights / np.sum(weights)  # Normalize
-            
-            # In practice, these weights would be used during model training
-            # For simulation, we return the weights
-            return data, labels, weights
-            
-        except Exception as e:
-            st.error(f"Anomaly-aware training error: {e}")
-            return data, labels, np.ones(len(data)) / len(data)
-
-# --- DATA UPLOAD AND PROCESSING ---
-
-class DataProcessor:
-    """Handle data upload and preprocessing"""
-    
-    def __init__(self):
-        self.supported_formats = ['csv', 'json', 'xlsx', 'parquet']
-    
-    def process_uploaded_file(self, uploaded_file):
-        """Process uploaded file and return DataFrame"""
-        try:
-            file_extension = uploaded_file.name.split('.')[-1].lower()
-            
-            if file_extension == 'csv':
-                df = pd.read_csv(uploaded_file)
-            elif file_extension == 'json':
-                df = pd.read_json(uploaded_file)
-            elif file_extension == 'xlsx':
-                df = pd.read_excel(uploaded_file)
-            elif file_extension == 'parquet':
-                df = pd.read_parquet(uploaded_file)
-            else:
-                st.error(f"Unsupported file format: {file_extension}")
-                return None
-            
-            st.success(f"✅ Successfully loaded {len(df)} records with {len(df.columns)} features")
-            return df
-            
-        except Exception as e:
-            st.error(f"Error processing file: {e}")
-            return None
-    
-    def validate_dataset(self, df):
-        """Validate dataset for common issues"""
-        issues = []
-        
-        # Check for missing values
-        missing_values = df.isnull().sum().sum()
-        if missing_values > 0:
-            issues.append(f"Found {missing_values} missing values")
-        
-        # Check for constant columns
-        constant_cols = [col for col in df.columns if df[col].nunique() == 1]
-        if constant_cols:
-            issues.append(f"Constant columns: {constant_cols}")
-        
-        # Check for duplicate rows
-        duplicates = df.duplicated().sum()
-        if duplicates > 0:
-            issues.append(f"Found {duplicates} duplicate rows")
-        
-        return issues
-    
-    def generate_synthetic_data(self, data_type='financial', n_samples=1000):
-        """Generate synthetic datasets for testing"""
-        try:
-            if data_type == 'financial':
-                dates = pd.date_range(end=datetime.now(), periods=n_samples, freq='D')
-                data = {
-                    'date': dates,
-                    'amount': np.random.exponential(100, n_samples),
-                    'transaction_type': np.random.choice(['debit', 'credit'], n_samples),
-                    'balance': np.random.normal(5000, 2000, n_samples).cumsum(),
-                    'category': np.random.choice(['food', 'shopping', 'transfer', 'salary'], n_samples)
-                }
-                return pd.DataFrame(data)
-            
-            elif data_type == 'healthcare':
-                data = {
-                    'patient_id': range(n_samples),
-                    'age': np.random.randint(18, 80, n_samples),
-                    'blood_pressure': np.random.normal(120, 20, n_samples),
-                    'cholesterol': np.random.normal(200, 40, n_samples),
-                    'glucose': np.random.normal(100, 20, n_samples),
-                    'has_disease': np.random.choice([0, 1], n_samples, p=[0.8, 0.2])
-                }
-                return pd.DataFrame(data)
-            
-            elif data_type == 'iot':
-                timestamps = pd.date_range(end=datetime.now(), periods=n_samples, freq='H')
-                data = {
-                    'timestamp': timestamps,
-                    'temperature': np.random.normal(25, 5, n_samples),
-                    'humidity': np.random.normal(50, 15, n_samples),
-                    'pressure': np.random.normal(1013, 10, n_samples),
-                    'vibration': np.random.exponential(1, n_samples)
-                }
-                return pd.DataFrame(data)
-            
-            else:
-                # Generic multivariate data
-                n_features = 10
-                X = np.random.randn(n_samples, n_features)
-                columns = [f'feature_{i}' for i in range(n_features)]
-                return pd.DataFrame(X, columns=columns)
-                
-        except Exception as e:
-            st.error(f"Error generating synthetic data: {e}")
-            return None
-
-# --- ORIGINAL DATA POISONING CLASSES (for compatibility) ---
+# --- CORE DATA POISONING CLASSES ---
 
 class DataPoisoningAttacks:
     """Simulate various data poisoning attacks"""
@@ -825,7 +460,271 @@ class RealTimeDataMonitor:
         
         return {'anomaly_detected': False, 'anomaly_count': 0, 'stream_size': len(self.data_stream), 'anomaly_rate': 0.0}
 
-# --- LIVE DATA FETCHER (for compatibility) ---
+# --- ENHANCED DATA SOURCES INTEGRATION ---
+
+class AdvancedDataFetcher:
+    """Enhanced data fetcher with more sources and capabilities"""
+    
+    def __init__(self):
+        self.data_cache = {}
+        self.request_headers = {
+            'User-Agent': 'DataPoisoningDefensePlatform/1.0',
+            'Accept': 'application/json'
+        }
+    
+    def fetch_udise_data(self):
+        """Fetch Unified District Information System for Education data (simulated)"""
+        try:
+            # Simulate UDISE+ education data
+            states = ['Maharashtra', 'Tamil Nadu', 'Karnataka', 'Delhi', 'Kerala', 'Gujarat']
+            data = {
+                'State': states,
+                'Total_Schools': np.random.randint(50000, 200000, len(states)),
+                'Enrollment': np.random.randint(1000000, 5000000, len(states)),
+                'Teacher_Count': np.random.randint(50000, 200000, len(states)),
+                'Girls_Enrollment_Ratio': np.random.uniform(0.45, 0.55, len(states)),
+                'Digital_Classrooms': np.random.randint(1000, 50000, len(states))
+            }
+            return pd.DataFrame(data)
+        except Exception as e:
+            st.error(f"Error fetching UDISE data: {e}")
+            return None
+    
+    def fetch_health_data(self):
+        """Fetch health and nutrition data (simulated)"""
+        try:
+            indicators = ['Malnutrition_Rate', 'Immunization_Coverage', 'Institutional_Deliveries', 
+                         'Doctor_Population_Ratio', 'Hospital_Beds_Per_1000']
+            states = ['Bihar', 'UP', 'MP', 'Rajasthan', 'West Bengal', 'Assam']
+            
+            data = []
+            for state in states:
+                for indicator in indicators:
+                    data.append({
+                        'State': state,
+                        'Indicator': indicator,
+                        'Value': np.random.uniform(10, 95),
+                        'Year': 2023
+                    })
+            
+            return pd.DataFrame(data)
+        except Exception as e:
+            st.error(f"Error fetching health data: {e}")
+            return None
+    
+    def fetch_agriculture_data(self):
+        """Fetch agricultural production data (simulated)"""
+        try:
+            crops = ['Rice', 'Wheat', 'Sugarcane', 'Cotton', 'Pulses']
+            states = ['Punjab', 'Haryana', 'UP', 'MP', 'Andhra Pradesh']
+            
+            data = []
+            for crop in crops:
+                for state in states:
+                    data.append({
+                        'Crop': crop,
+                        'State': state,
+                        'Production_Tonnes': np.random.randint(100000, 5000000),
+                        'Area_Hectares': np.random.randint(50000, 2000000),
+                        'Yield_Kg_Hectare': np.random.randint(1000, 5000)
+                    })
+            
+            return pd.DataFrame(data)
+        except Exception as e:
+            st.error(f"Error fetching agriculture data: {e}")
+            return None
+    
+    def fetch_social_welfare_data(self):
+        """Fetch social welfare scheme data (simulated)"""
+        try:
+            schemes = ['PM-KISAN', 'MNREGA', 'PM-JAY', 'NSAP', 'ICDS']
+            data = {
+                'Scheme': schemes,
+                'Beneficiaries_Millions': np.random.randint(50, 500, len(schemes)),
+                'Budget_Crores': np.random.randint(1000, 50000, len(schemes)),
+                'Women_Beneficiaries_Percent': np.random.uniform(40, 60, len(schemes)),
+                'Rural_Coverage_Percent': np.random.uniform(70, 95, len(schemes))
+            }
+            return pd.DataFrame(data)
+        except Exception as e:
+            st.error(f"Error fetching social welfare data: {e}")
+            return None
+
+# --- ADVANCED DATA POISONING DETECTION ---
+
+class AdvancedPoisoningDetector:
+    """Advanced poisoning detection with ensemble methods"""
+    
+    def __init__(self):
+        self.detectors = {
+            'isolation_forest': IsolationForest(contamination=0.1, random_state=42),
+            'local_outlier_factor': None,  # Could be added
+            'autoencoder': None  # Could be added for deep learning approach
+        }
+        self.scaler = StandardScaler()
+        self.detection_history = []
+    
+    def ensemble_detection(self, data):
+        """Use multiple detectors for consensus-based detection"""
+        try:
+            scaled_data = self.scaler.fit_transform(data)
+            
+            # Get predictions from available detectors
+            predictions = []
+            
+            # Isolation Forest
+            iforest_pred = self.detectors['isolation_forest'].fit_predict(scaled_data)
+            predictions.append((iforest_pred == -1).astype(int))
+            
+            # Statistical methods
+            z_scores = np.abs((data - data.mean(axis=0)) / data.std(axis=0))
+            z_anomalies = (z_scores > 3).any(axis=1).astype(int)
+            predictions.append(z_anomalies)
+            
+            # Combine predictions (majority voting)
+            ensemble_pred = np.mean(predictions, axis=0) > 0.5
+            anomaly_indices = np.where(ensemble_pred)[0]
+            
+            # Log detection
+            self.detection_history.append({
+                'timestamp': datetime.now(),
+                'samples_analyzed': len(data),
+                'anomalies_detected': len(anomaly_indices),
+                'detection_rate': len(anomaly_indices) / len(data)
+            })
+            
+            return anomaly_indices
+            
+        except Exception as e:
+            st.error(f"Ensemble detection error: {e}")
+            return np.array([])
+    
+    def temporal_analysis(self, data, timestamps):
+        """Analyze temporal patterns for poisoning detection"""
+        try:
+            if len(data) != len(timestamps):
+                return np.array([])
+            
+            # Calculate rolling statistics
+            if data.shape[1] >= 1:
+                feature_means = np.array([np.mean(data[max(0, i-10):i+1], axis=0) 
+                                        for i in range(len(data))])
+                feature_stds = np.array([np.std(data[max(0, i-10):i+1], axis=0) 
+                                      for i in range(len(data))])
+                
+                # Detect sudden changes
+                changes = np.abs(data - feature_means) / (feature_stds + 1e-8)
+                temporal_anomalies = np.where((changes > 2).any(axis=1))[0]
+                
+                return temporal_anomalies
+            
+            return np.array([])
+            
+        except Exception as e:
+            st.error(f"Temporal analysis error: {e}")
+            return np.array([])
+
+# --- DATA UPLOAD AND PROCESSING ---
+
+class DataProcessor:
+    """Handle data upload and preprocessing"""
+    
+    def __init__(self):
+        self.supported_formats = ['csv', 'json', 'xlsx', 'parquet']
+    
+    def process_uploaded_file(self, uploaded_file):
+        """Process uploaded file and return DataFrame"""
+        try:
+            file_extension = uploaded_file.name.split('.')[-1].lower()
+            
+            if file_extension == 'csv':
+                df = pd.read_csv(uploaded_file)
+            elif file_extension == 'json':
+                df = pd.read_json(uploaded_file)
+            elif file_extension == 'xlsx':
+                df = pd.read_excel(uploaded_file)
+            elif file_extension == 'parquet':
+                df = pd.read_parquet(uploaded_file)
+            else:
+                st.error(f"Unsupported file format: {file_extension}")
+                return None
+            
+            st.success(f"✅ Successfully loaded {len(df)} records with {len(df.columns)} features")
+            return df
+            
+        except Exception as e:
+            st.error(f"Error processing file: {e}")
+            return None
+    
+    def validate_dataset(self, df):
+        """Validate dataset for common issues"""
+        issues = []
+        
+        # Check for missing values
+        missing_values = df.isnull().sum().sum()
+        if missing_values > 0:
+            issues.append(f"Found {missing_values} missing values")
+        
+        # Check for constant columns
+        constant_cols = [col for col in df.columns if df[col].nunique() == 1]
+        if constant_cols:
+            issues.append(f"Constant columns: {constant_cols}")
+        
+        # Check for duplicate rows
+        duplicates = df.duplicated().sum()
+        if duplicates > 0:
+            issues.append(f"Found {duplicates} duplicate rows")
+        
+        return issues
+    
+    def generate_synthetic_data(self, data_type='financial', n_samples=1000):
+        """Generate synthetic datasets for testing"""
+        try:
+            if data_type == 'financial':
+                dates = pd.date_range(end=datetime.now(), periods=n_samples, freq='D')
+                data = {
+                    'date': dates,
+                    'amount': np.random.exponential(100, n_samples),
+                    'transaction_type': np.random.choice(['debit', 'credit'], n_samples),
+                    'balance': np.random.normal(5000, 2000, n_samples).cumsum(),
+                    'category': np.random.choice(['food', 'shopping', 'transfer', 'salary'], n_samples)
+                }
+                return pd.DataFrame(data)
+            
+            elif data_type == 'healthcare':
+                data = {
+                    'patient_id': range(n_samples),
+                    'age': np.random.randint(18, 80, n_samples),
+                    'blood_pressure': np.random.normal(120, 20, n_samples),
+                    'cholesterol': np.random.normal(200, 40, n_samples),
+                    'glucose': np.random.normal(100, 20, n_samples),
+                    'has_disease': np.random.choice([0, 1], n_samples, p=[0.8, 0.2])
+                }
+                return pd.DataFrame(data)
+            
+            elif data_type == 'iot':
+                timestamps = pd.date_range(end=datetime.now(), periods=n_samples, freq='H')
+                data = {
+                    'timestamp': timestamps,
+                    'temperature': np.random.normal(25, 5, n_samples),
+                    'humidity': np.random.normal(50, 15, n_samples),
+                    'pressure': np.random.normal(1013, 10, n_samples),
+                    'vibration': np.random.exponential(1, n_samples)
+                }
+                return pd.DataFrame(data)
+            
+            else:
+                # Generic multivariate data
+                n_features = 10
+                X = np.random.randn(n_samples, n_features)
+                columns = [f'feature_{i}' for i in range(n_features)]
+                return pd.DataFrame(X, columns=columns)
+                
+        except Exception as e:
+            st.error(f"Error generating synthetic data: {e}")
+            return None
+
+# --- LIVE DATA FETCHER ---
 
 class LiveDataFetcher:
     """Fetch live data from various sources for data poisoning analysis"""
@@ -903,193 +802,6 @@ class LiveDataFetcher:
         except Exception as e:
             st.error(f"Error fetching NSO data: {e}")
             return None
-    
-    def fetch_india_ai_data(self):
-        """Fetch India AI dataset information (simulated)"""
-        try:
-            datasets = {
-                'Agricultural_Data': {
-                    'description': 'Crop yield prediction data across Indian states',
-                    'size': '2.5GB',
-                    'samples': '500,000',
-                    'features': '45',
-                    'url': 'https://indiaai.gov.in/datasets'
-                },
-                'Healthcare_Records': {
-                    'description': 'Anonymized patient records from public hospitals',
-                    'size': '1.8GB',
-                    'samples': '300,000',
-                    'features': '32',
-                    'url': 'https://indiaai.gov.in/datasets'
-                },
-                'Financial_Transactions': {
-                    'description': 'Banking transaction patterns',
-                    'size': '3.2GB',
-                    'samples': '1,200,000',
-                    'features': '28',
-                    'url': 'https://indiaai.gov.in/datasets'
-                },
-                'Education_Data': {
-                    'description': 'Student performance and institutional data',
-                    'size': '950MB',
-                    'samples': '150,000',
-                    'features': '25',
-                    'url': 'https://indiaai.gov.in/datasets'
-                }
-            }
-            return datasets
-            
-        except Exception as e:
-            st.error(f"Error fetching India AI data: {e}")
-            return None
-    
-    def fetch_kaggle_datasets(self, search_term='finance'):
-        """Fetch datasets from Kaggle (simulated without API)"""
-        try:
-            # Simulated Kaggle datasets without API dependency
-            datasets = {
-                'credit-card-fraud': {
-                    'title': 'Credit Card Fraud Detection',
-                    'size': '150MB',
-                    'downloads': '45,000',
-                    'url': 'https://www.kaggle.com/mlg-ulb/creditcardfraud',
-                    'description': 'Real-world credit card transactions for fraud detection'
-                },
-                'loan-prediction': {
-                    'title': 'Loan Prediction Dataset',
-                    'size': '45MB',
-                    'downloads': '23,000',
-                    'url': 'https://www.kaggle.com/altruistdelhite04/loan-prediction-problem-dataset',
-                    'description': 'Loan application data for prediction models'
-                },
-                'stock-market-data': {
-                    'title': 'Indian Stock Market Data',
-                    'size': '320MB',
-                    'downloads': '18,000',
-                    'url': 'https://www.kaggle.com/rohanrao/nifty50-stock-market-data',
-                    'description': 'Historical data for Nifty 50 stocks'
-                },
-                'customer-segmentation': {
-                    'title': 'Customer Segmentation',
-                    'size': '85MB',
-                    'downloads': '32,000',
-                    'url': 'https://www.kaggle.com/vjchoudhary7/customer-segmentation-tutorial-in-python',
-                    'description': 'Mall customer data for segmentation analysis'
-                }
-            }
-            
-            # Filter by search term
-            filtered_datasets = {}
-            for key, dataset in datasets.items():
-                if search_term.lower() in dataset['title'].lower() or search_term.lower() in dataset['description'].lower():
-                    filtered_datasets[key] = dataset
-            
-            return filtered_datasets if filtered_datasets else datasets
-            
-        except Exception as e:
-            st.error(f"Error fetching Kaggle data: {e}")
-            return None
-    
-    def fetch_financial_data(self, symbols=['RELIANCE.NS', 'TCS.NS', 'INFY.NS']):
-        """Fetch live financial data using yfinance"""
-        try:
-            if not YFINANCE_AVAILABLE:
-                # Simulate financial data if yfinance is not available
-                st.markdown('<div class="warning-box">', unsafe_allow_html=True)
-                st.warning("Using simulated financial data. Install yfinance for live data:")
-                st.code("pip install yfinance")
-                st.markdown('</div>', unsafe_allow_html=True)
-                
-                # Generate simulated stock data
-                simulated_data = {}
-                dates = pd.date_range(end=datetime.now(), periods=100, freq='D')
-                
-                for symbol in symbols:
-                    # Simulate stock price movement
-                    base_price = 1000 if 'RELIANCE' in symbol else 3000 if 'TCS' in symbol else 1500
-                    returns = np.random.normal(0.001, 0.02, 100)  # Daily returns
-                    prices = base_price * (1 + returns).cumprod()
-                    
-                    simulated_data[symbol] = pd.DataFrame({
-                        'Date': dates,
-                        'Open': prices * 0.99,
-                        'High': prices * 1.02,
-                        'Low': prices * 0.98,
-                        'Close': prices,
-                        'Volume': np.random.randint(1000000, 5000000, 100)
-                    }).set_index('Date')
-                
-                return simulated_data
-            
-            # If yfinance is available, use real data
-            data = {}
-            for symbol in symbols:
-                stock = yf.Ticker(symbol)
-                hist = stock.history(period="3mo")
-                data[symbol] = hist
-            return data
-        except Exception as e:
-            st.error(f"Error fetching financial data: {e}")
-            return None
-    
-    def fetch_government_data(self):
-        """Fetch Indian government open data (simulated)"""
-        try:
-            datasets = {
-                'Digital_India_Metrics': {
-                    'description': 'Digital infrastructure and adoption metrics',
-                    'records': '50,000',
-                    'update_frequency': 'Monthly',
-                    'url': 'https://data.gov.in'
-                },
-                'Smart_Cities': {
-                    'description': 'Smart city project implementation data',
-                    'records': '15,000',
-                    'update_frequency': 'Quarterly',
-                    'url': 'https://data.gov.in'
-                },
-                'Agriculture_Production': {
-                    'description': 'Crop production data across states',
-                    'records': '200,000',
-                    'update_frequency': 'Annual',
-                    'url': 'https://data.gov.in'
-                },
-                'Economic_Survey': {
-                    'description': 'Annual economic survey data',
-                    'records': '10,000',
-                    'update_frequency': 'Annual',
-                    'url': 'https://data.gov.in'
-                }
-            }
-            return datasets
-        except Exception as e:
-            st.error(f"Error fetching government data: {e}")
-            return None
-
-    def fetch_web_data(self, url):
-        """Generic web data fetcher for any public API"""
-        try:
-            # Simulate web data fetching
-            st.info(f"📡 Fetching data from: {url}")
-            time.sleep(2)  # Simulate API call
-            
-            # Return simulated data based on URL type
-            if 'rbi' in url.lower():
-                return self.fetch_rbi_data()
-            elif 'statistics' in url.lower():
-                return self.fetch_nso_data()
-            else:
-                # Generic simulated dataset
-                data = {
-                    'timestamp': pd.date_range(end=datetime.now(), periods=50, freq='H'),
-                    'value': np.random.randn(50).cumsum() + 100,
-                    'metric': np.random.choice(['temperature', 'pressure', 'humidity'], 50)
-                }
-                return pd.DataFrame(data)
-                
-        except Exception as e:
-            st.error(f"Error fetching web data: {e}")
-            return None
 
 # --- UI COMPONENTS ---
 
@@ -1146,8 +858,290 @@ def render_login():
         st.write("• Federated learning")
         st.write("• Model security")
 
-# [Previous UI components like render_data_poisoning_simulator, render_poisoning_detector, etc. would go here]
-# For brevity, I'm including the key new components and the main structure
+def render_data_poisoning_simulator():
+    """Data poisoning attack simulation interface"""
+    st.markdown("### 🧪 DATA POISONING ATTACK SIMULATOR")
+    
+    attacks = DataPoisoningAttacks()
+    
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.markdown("#### 🔥 ATTACK CONFIGURATION")
+        
+        attack_type = st.selectbox(
+            "Select Attack Type:",
+            list(attacks.attack_types.keys()),
+            format_func=lambda x: f"{x.replace('_', ' ').title()} - {attacks.attack_types[x]}"
+        )
+        
+        # Generate sample data
+        if st.button("🔄 Generate Sample Dataset", key="gen_data"):
+            with st.spinner("Generating sample dataset..."):
+                # Create synthetic dataset
+                n_samples = 1000
+                n_features = 10
+                X = np.random.randn(n_samples, n_features)
+                y = np.random.randint(0, 3, n_samples)
+                
+                st.session_state.clean_data = X
+                st.session_state.clean_labels = y
+                st.success(f"✅ Generated dataset: {n_samples} samples, {n_features} features")
+        
+        if 'clean_data' in st.session_state:
+            st.info(f"📊 Dataset loaded: {st.session_state.clean_data.shape[0]} samples, {st.session_state.clean_data.shape[1]} features")
+            
+            if st.button("🚀 Launch Poisoning Attack", key="launch_attack"):
+                with st.spinner(f"Executing {attack_type} attack..."):
+                    time.sleep(2)
+                    
+                    if attack_type == 'label_flipping':
+                        poisoned_data, poisoned_labels, attack_indices = attacks.label_flipping_attack(
+                            st.session_state.clean_data, st.session_state.clean_labels
+                        )
+                    elif attack_type == 'feature_manipulation':
+                        poisoned_data, attack_indices = attacks.feature_manipulation_attack(
+                            st.session_state.clean_data
+                        )
+                        poisoned_labels = st.session_state.clean_labels
+                    else:
+                        # Default attack
+                        poisoned_data, poisoned_labels, attack_indices = attacks.label_flipping_attack(
+                            st.session_state.clean_data, st.session_state.clean_labels
+                        )
+                    
+                    st.session_state.poisoned_data = poisoned_data
+                    st.session_state.poisoned_labels = poisoned_labels
+                    st.session_state.attack_indices = attack_indices
+                    
+                    st.error(f"🎯 Attack Successful! Poisoned {len(attack_indices)} samples")
+                    
+                    # Show attack statistics
+                    col_a, col_b, col_c = st.columns(3)
+                    with col_a:
+                        st.metric("📈 Total Samples", len(poisoned_data))
+                    with col_b:
+                        st.metric("☠️ Poisoned Samples", len(attack_indices))
+                    with col_c:
+                        poison_rate = (len(attack_indices) / len(poisoned_data)) * 100
+                        st.metric("📊 Poison Rate", f"{poison_rate:.1f}%")
+    
+    with col2:
+        st.markdown("#### 📈 ATTACK STATISTICS")
+        
+        if 'attack_indices' in st.session_state:
+            st.metric("🔥 Active Attacks", "1")
+            st.metric("🎯 Success Rate", "95%")
+            st.metric("⏱️ Detection Time", "2.3s")
+            
+            st.markdown("#### 🎯 ATTACK PATTERNS")
+            st.write("• Label manipulation")
+            st.write("• Feature corruption")
+            st.write("• Backdoor triggers")
+            st.write("• Gradient poisoning")
+        
+        st.markdown("""
+        <div class="explanation-box">
+            <div class="explanation-title">🧪 DATA POISONING EXPLAINED</div>
+            <p><strong>Data poisoning</strong> involves manipulating training data to compromise ML model performance.</p>
+            
+            <p><strong>Common Attack Vectors:</strong></p>
+            <ul>
+                <li>🔀 Label Flipping - Changing data labels</li>
+                <li>📊 Feature Manipulation - Corrupting input features</li>
+                <li>🚪 Backdoor Injection - Adding hidden triggers</li>
+                <li>📈 Data Replication - Amplifying malicious samples</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+
+def render_poisoning_detector():
+    """Data poisoning detection interface"""
+    st.markdown("### 🔍 DATA POISONING DETECTOR")
+    
+    detector = DataPoisoningDetector()
+    
+    tab1, tab2, tab3 = st.tabs(["🎯 Anomaly Detection", "📊 Statistical Analysis", "📈 Real-time Monitoring"])
+    
+    with tab1:
+        st.markdown("#### 🎯 ANOMALY DETECTION ALGORITHMS")
+        
+        if 'poisoned_data' in st.session_state:
+            data = st.session_state.poisoned_data
+            
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                if st.button("🌲 Isolation Forest", key="iso_forest"):
+                    with st.spinner("Running Isolation Forest..."):
+                        anomalies = detector.detect_anomalies_isolation_forest(data)
+                        st.session_state.detected_anomalies = anomalies
+                        st.success(f"✅ Detected {len(anomalies)} anomalies")
+            
+            with col2:
+                if st.button("🤖 One-Class SVM", key="one_class_svm"):
+                    with st.spinner("Running One-Class SVM..."):
+                        anomalies = detector.detect_anomalies_svm(data)
+                        st.session_state.detected_anomalies = anomalies
+                        st.success(f"✅ Detected {len(anomalies)} anomalies")
+            
+            with col3:
+                if st.button("🔍 DBSCAN Clustering", key="dbscan"):
+                    with st.spinner("Running DBSCAN..."):
+                        anomalies = detector.detect_cluster_anomalies(data)
+                        st.session_state.detected_anomalies = anomalies
+                        st.success(f"✅ Detected {len(anomalies)} anomalies")
+            
+            if 'detected_anomalies' in st.session_state:
+                st.markdown("#### 📋 DETECTION RESULTS")
+                
+                # Compare with actual attack indices
+                actual_poisoned = set(st.session_state.attack_indices)
+                detected_anomalies = set(st.session_state.detected_anomalies)
+                
+                true_positives = len(actual_poisoned.intersection(detected_anomalies))
+                false_positives = len(detected_anomalies - actual_poisoned)
+                false_negatives = len(actual_poisoned - detected_anomalies)
+                
+                col_a, col_b, col_c, col_d = st.columns(4)
+                with col_a:
+                    st.metric("🎯 True Positives", true_positives)
+                with col_b:
+                    st.metric("🚫 False Positives", false_positives)
+                with col_c:
+                    st.metric("❌ False Negatives", false_negatives)
+                with col_d:
+                    precision = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0
+                    st.metric("📊 Precision", f"{precision:.2f}")
+        
+        else:
+            st.warning("⚠️ Please generate and poison a dataset first using the Attack Simulator")
+    
+    with tab2:
+        st.markdown("#### 📊 STATISTICAL ANALYSIS")
+        
+        if 'poisoned_data' in st.session_state:
+            if st.button("📈 Run Statistical Analysis", key="stat_analysis"):
+                with st.spinner("Performing statistical analysis..."):
+                    results = detector.statistical_analysis(st.session_state.poisoned_data)
+                    
+                    st.markdown("##### Z-Score Analysis")
+                    z_anomalies = results['z_score_anomalies']
+                    st.write(f"Detected {len(z_anomalies)} samples with |Z-score| > 3")
+                    
+                    st.markdown("##### Mahalanobis Distance")
+                    m_anomalies = results['mahalanobis_anomalies']
+                    st.write(f"Detected {len(m_anomalies)} outliers using Mahalanobis distance")
+    
+    with tab3:
+        st.markdown("#### 📈 REAL-TIME DATA STREAM MONITORING")
+        
+        monitor = RealTimeDataMonitor()
+        
+        if st.button("🔴 Start Real-time Monitoring", key="start_monitor"):
+            st.info("🔄 Monitoring data stream...")
+            
+            # Simulate real-time data stream
+            for i in range(20):
+                new_point = np.random.randn(10)  # 10 features
+                result = monitor.monitor_data_stream(new_point)
+                
+                if result['anomaly_detected']:
+                    st.markdown(f'<div class="poison-alert">🚨 ANOMALY DETECTED! {result["anomaly_count"]} anomalies in stream</div>', unsafe_allow_html=True)
+                else:
+                    st.markdown(f'<div class="defense-success">✅ Stream clean - {result["stream_size"]} points monitored</div>', unsafe_allow_html=True)
+                
+                time.sleep(0.5)
+
+def render_defense_mechanisms():
+    """Defense mechanisms against data poisoning"""
+    st.markdown("### 🛡️ DEFENSE MECHANISMS")
+    
+    defense = DefenseMechanisms()
+    
+    tab1, tab2, tab3 = st.tabs(["🧹 Data Sanitization", "🎯 Robust Training", "🌐 Federated Learning"])
+    
+    with tab1:
+        st.markdown("#### 🧹 DATA SANITIZATION")
+        
+        if 'detected_anomalies' in st.session_state and 'poisoned_data' in st.session_state:
+            st.info(f"🔍 {len(st.session_state.detected_anomalies)} anomalies detected")
+            
+            if st.button("🧼 Sanitize Dataset", key="sanitize"):
+                with st.spinner("Removing poisoned samples..."):
+                    clean_data, clean_labels = defense.data_sanitization(
+                        st.session_state.poisoned_data,
+                        st.session_state.poisoned_labels,
+                        st.session_state.detected_anomalies
+                    )
+                    
+                    st.session_state.clean_data_sanitized = clean_data
+                    st.session_state.clean_labels_sanitized = clean_labels
+                    
+                    st.success(f"✅ Dataset sanitized! Removed {len(st.session_state.detected_anomalies)} samples")
+                    
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.metric("📊 Original Size", len(st.session_state.poisoned_data))
+                    with col2:
+                        st.metric("🧼 Sanitized Size", len(clean_data))
+        
+        else:
+            st.warning("⚠️ Please run anomaly detection first")
+    
+    with tab2:
+        st.markdown("#### 🎯 ROBUST TRAINING TECHNIQUES")
+        
+        robust_method = st.selectbox(
+            "Select Robust Training Method:",
+            ['trimmed_loss', 'differential_privacy'],
+            format_func=lambda x: x.replace('_', ' ').title()
+        )
+        
+        if st.button("🛡️ Apply Robust Training", key="robust_train"):
+            with st.spinner("Applying robust training techniques..."):
+                if 'clean_data' in st.session_state:
+                    robust_data, robust_labels = defense.robust_training(
+                        st.session_state.clean_data,
+                        st.session_state.clean_labels,
+                        robust_method
+                    )
+                    
+                    st.session_state.robust_data = robust_data
+                    st.session_state.robust_labels = robust_labels
+                    
+                    st.success(f"✅ Applied {robust_method} robust training")
+    
+    with tab3:
+        st.markdown("#### 🌐 FEDERATED LEARNING DEFENSE")
+        
+        st.info("Simulating federated learning with multiple clients")
+        
+        if st.button("🛡️ Test Federated Defense", key="federated_defense"):
+            with st.spinner("Simulating federated learning scenario..."):
+                # Simulate multiple clients with potentially poisoned data
+                n_clients = 5
+                client_data = []
+                
+                for i in range(n_clients):
+                    # One client is malicious (poisoned data)
+                    if i == 0:  # Malicious client
+                        client_data.append(np.random.randn(10) + 2)  # Poisoned data
+                    else:  # Honest clients
+                        client_data.append(np.random.randn(10))
+                
+                # Test different aggregation methods
+                methods = ['mean', 'median', 'trimmed_mean']
+                results = {}
+                
+                for method in methods:
+                    aggregated = defense.federated_learning_defense(client_data, method)
+                    results[method] = np.linalg.norm(aggregated - np.mean(client_data[1:], axis=0))  # Distance from honest mean
+                
+                # Display results
+                st.markdown("##### Aggregation Method Effectiveness")
+                for method, distance in results.items():
+                    st.write(f"**{method.title()}:** Distance from honest mean = {distance:.4f}")
 
 def render_advanced_detection():
     """Advanced poisoning detection interface"""
@@ -1155,7 +1149,7 @@ def render_advanced_detection():
     
     advanced_detector = AdvancedPoisoningDetector()
     
-    tab1, tab2, tab3, tab4 = st.tabs(["🎯 Ensemble Detection", "⏰ Temporal Analysis", "📊 Explainable AI", "📈 Detection Analytics"])
+    tab1, tab2 = st.tabs(["🎯 Ensemble Detection", "⏰ Temporal Analysis"])
     
     with tab1:
         st.markdown("#### 🎯 ENSEMBLE DETECTION")
@@ -1163,25 +1157,25 @@ def render_advanced_detection():
         if 'poisoned_data' in st.session_state:
             data = st.session_state.poisoned_data
             
-            col1, col2 = st.columns([2, 1])
-            
-            with col1:
-                if st.button("🚀 Run Ensemble Detection", key="ensemble_detect"):
-                    with st.spinner("Running ensemble detection with multiple algorithms..."):
-                        anomalies = advanced_detector.ensemble_detection(data)
-                        st.session_state.ensemble_anomalies = anomalies
+            if st.button("🚀 Run Ensemble Detection", key="ensemble_detect"):
+                with st.spinner("Running ensemble detection with multiple algorithms..."):
+                    anomalies = advanced_detector.ensemble_detection(data)
+                    st.session_state.ensemble_anomalies = anomalies
+                    
+                    st.success(f"✅ Ensemble detection complete! Found {len(anomalies)} anomalies")
+                    
+                    # Compare with known attacks
+                    if 'attack_indices' in st.session_state:
+                        actual_attacks = set(st.session_state.attack_indices)
+                        detected = set(anomalies)
                         
-                        st.success(f"✅ Ensemble detection complete! Found {len(anomalies)} anomalies")
-            
-            with col2:
-                st.markdown("##### 🔧 ENSEMBLE METHODS")
-                st.markdown("""
-                - **Isolation Forest**
-                - **Statistical Analysis**
-                - **Z-Score Detection**
-                - **Majority Voting**
-                - **Confidence Scoring**
-                """)
+                        tp = len(actual_attacks.intersection(detected))
+                        fp = len(detected - actual_attacks)
+                        fn = len(actual_attacks - detected)
+                        
+                        st.metric("🎯 True Positives", tp)
+                        st.metric("🚫 False Positives", fp)
+                        st.metric("❌ False Negatives", fn)
     
     with tab2:
         st.markdown("#### ⏰ TEMPORAL ANALYSIS")
@@ -1198,28 +1192,6 @@ def render_advanced_detection():
                     
                     st.session_state.temporal_anomalies = temporal_anomalies
                     st.success(f"✅ Found {len(temporal_anomalies)} temporal anomalies")
-    
-    with tab3:
-        st.markdown("#### 📊 EXPLAINABLE AI - ANOMALY EXPLANATIONS")
-        
-        if 'ensemble_anomalies' in st.session_state and 'poisoned_data' in st.session_state:
-            if st.button("🔍 Generate Explanations", key="explain_anomalies"):
-                with st.spinner("Generating explanations for detected anomalies..."):
-                    explanations = advanced_detector.explain_anomalies(
-                        st.session_state.poisoned_data, 
-                        st.session_state.ensemble_anomalies
-                    )
-                    
-                    st.session_state.anomaly_explanations = explanations
-                    st.success(f"✅ Generated explanations for {len(explanations)} anomalies")
-    
-    with tab4:
-        st.markdown("#### 📈 DETECTION ANALYTICS")
-        
-        if hasattr(advanced_detector, 'detection_history') and advanced_detector.detection_history:
-            st.info("Detection analytics would be displayed here")
-        else:
-            st.info("Run detection algorithms to see analytics")
 
 def render_data_upload_center():
     """Data upload and processing center"""
@@ -1227,7 +1199,7 @@ def render_data_upload_center():
     
     data_processor = DataProcessor()
     
-    tab1, tab2, tab3, tab4 = st.tabs(["📤 Upload Data", "🛠️ Data Validation", "🧪 Synthetic Data", "📊 Data Explorer"])
+    tab1, tab2, tab3 = st.tabs(["📤 Upload Data", "🛠️ Data Validation", "🧪 Synthetic Data"])
     
     with tab1:
         st.markdown("#### 📤 UPLOAD YOUR DATASET")
@@ -1280,8 +1252,60 @@ def render_data_upload_center():
                 dtype_counts = df.dtypes.value_counts()
                 for dtype, count in dtype_counts.items():
                     st.write(f"• {dtype}: {count} columns")
+            
+            # Run validation
+            if st.button("🔍 Run Data Validation", key="run_validation"):
+                issues = data_processor.validate_dataset(df)
+                
+                if issues:
+                    st.markdown('<div class="warning-box">', unsafe_allow_html=True)
+                    st.warning("⚠️ Data Quality Issues Found:")
+                    for issue in issues:
+                        st.write(f"• {issue}")
+                    st.markdown('</div>', unsafe_allow_html=True)
+                else:
+                    st.markdown('<div class="success-box">', unsafe_allow_html=True)
+                    st.success("✅ No data quality issues found!")
+                    st.markdown('</div>', unsafe_allow_html=True)
         else:
             st.info("📝 Please upload a dataset first to run validation")
+    
+    with tab3:
+        st.markdown("#### 🧪 SYNTHETIC DATA GENERATOR")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            data_type = st.selectbox(
+                "Data Type:",
+                ['financial', 'healthcare', 'iot', 'generic'],
+                key='synth_data_type'
+            )
+            
+            n_samples = st.slider(
+                "Number of Samples:",
+                min_value=100,
+                max_value=10000,
+                value=1000,
+                step=100,
+                key='n_samples'
+            )
+        
+        with col2:
+            if st.button("🎲 Generate Synthetic Data", key="generate_synthetic"):
+                with st.spinner(f"Generating {data_type} dataset with {n_samples} samples..."):
+                    synthetic_df = data_processor.generate_synthetic_data(data_type, n_samples)
+                    
+                    if synthetic_df is not None:
+                        st.session_state.synthetic_data = synthetic_df
+                        st.session_state.clean_data = synthetic_df.select_dtypes(include=[np.number]).values
+                        if len(st.session_state.clean_data) > 0:
+                            st.session_state.clean_labels = np.random.randint(0, 3, len(st.session_state.clean_data))
+                        
+                        st.success(f"✅ Generated {data_type} dataset with {n_samples} samples")
+                        
+                        # Show preview
+                        st.dataframe(synthetic_df.head(), use_container_width=True)
 
 def render_indian_data_sources():
     """Enhanced Indian data sources interface"""
@@ -1303,6 +1327,47 @@ def render_indian_data_sources():
                     st.success(f"✅ Fetched education data for {len(education_data)} states")
                     
                     st.dataframe(education_data, use_container_width=True)
+                    
+                    # Create visualizations
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        fig1 = px.bar(education_data, x='State', y='Total_Schools', 
+                                     title='Total Schools by State')
+                        st.plotly_chart(fig1, use_container_width=True)
+    
+    with tab2:
+        st.markdown("#### 🏥 HEALTH & NUTRITION DATA")
+        
+        if st.button("📈 Fetch Health Data", key="fetch_health"):
+            with st.spinner("Fetching health and nutrition indicators..."):
+                health_data = advanced_fetcher.fetch_health_data()
+                
+                if health_data is not None:
+                    st.session_state.health_data = health_data
+                    st.success(f"✅ Fetched {len(health_data)} health indicators")
+    
+    with tab3:
+        st.markdown("#### 🌾 AGRICULTURE PRODUCTION DATA")
+        
+        if st.button("🌱 Fetch Agriculture Data", key="fetch_agriculture"):
+            with st.spinner("Fetching agricultural production data..."):
+                agri_data = advanced_fetcher.fetch_agriculture_data()
+                
+                if agri_data is not None:
+                    st.session_state.agri_data = agri_data
+                    st.success(f"✅ Fetched {len(agri_data)} crop production records")
+    
+    with tab4:
+        st.markdown("#### 🤝 SOCIAL WELFARE SCHEMES")
+        
+        if st.button("📋 Fetch Social Welfare Data", key="fetch_welfare"):
+            with st.spinner("Fetching social welfare scheme data..."):
+                welfare_data = advanced_fetcher.fetch_social_welfare_data()
+                
+                if welfare_data is not None:
+                    st.session_state.welfare_data = welfare_data
+                    st.success(f"✅ Fetched data for {len(welfare_data)} welfare schemes")
 
 def render_live_data_integration():
     """Live data integration from various sources"""
@@ -1310,14 +1375,7 @@ def render_live_data_integration():
     
     data_fetcher = LiveDataFetcher()
     
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "🏦 RBI Data", 
-        "📊 NSO Statistics", 
-        "🤖 India AI", 
-        "📈 Kaggle", 
-        "🏛️ Government Data",
-        "🌐 Web APIs"
-    ])
+    tab1, tab2 = st.tabs(["🏦 RBI Data", "📊 NSO Statistics"])
     
     with tab1:
         st.markdown("#### 🏦 RESERVE BANK OF INDIA DATA")
@@ -1339,6 +1397,19 @@ def render_live_data_integration():
                     if rbi_data is not None:
                         st.session_state.rbi_data = rbi_data
                         st.success(f"✅ Fetched {len(rbi_data)} records from RBI")
+                        
+                        # Display data
+                        st.dataframe(rbi_data, use_container_width=True)
+                        
+                        # Create visualization
+                        if rbi_data_type == 'forex':
+                            fig = px.line(rbi_data, x='Date', y='Total_Reserves', 
+                                         title='India Total Forex Reserves (Simulated)')
+                            st.plotly_chart(fig, use_container_width=True)
+                        else:
+                            fig = px.line(rbi_data, x='Date', y='Repo_Rate', 
+                                         title='RBI Repo Rate (Simulated)')
+                            st.plotly_chart(fig, use_container_width=True)
         
         with col2:
             st.markdown("##### 📊 RBI DATA SOURCES")
@@ -1347,9 +1418,83 @@ def render_live_data_integration():
             st.write("**Foreign Exchange Reserves**")
             st.write("• Total reserves")
             st.write("• Currency composition")
+            st.write("• Monthly changes")
             st.markdown('</div>', unsafe_allow_html=True)
+    
+    with tab2:
+        st.markdown("#### 📊 NATIONAL STATISTICAL OFFICE DATA")
+        
+        nso_dataset = st.selectbox(
+            "Select NSO Dataset:",
+            ['gdp', 'inflation'],
+            format_func=lambda x: 'GDP Growth Data' if x == 'gdp' else 'Inflation Data'
+        )
+        
+        if st.button("🔄 Fetch NSO Data", key="fetch_nso"):
+            with st.spinner("Fetching latest NSO statistics..."):
+                nso_data = data_fetcher.fetch_nso_data(nso_dataset)
+                
+                if nso_data is not None:
+                    st.session_state.nso_data = nso_data
+                    st.success(f"✅ Fetched {len(nso_data)} records from NSO")
+                    
+                    st.dataframe(nso_data, use_container_width=True)
+                    
+                    if nso_dataset == 'gdp':
+                        fig = px.bar(nso_data, x='Quarter', y='GDP_Growth_Rate',
+                                    title='India GDP Growth Rate (Simulated)')
+                        st.plotly_chart(fig, use_container_width=True)
+                    else:
+                        fig = px.line(nso_data, x='Month', y='CPI_Combined',
+                                    title='Consumer Price Index - Combined (Simulated)')
+                        st.plotly_chart(fig, use_container_width=True)
 
-# [Include other original UI components here...]
+def render_system_monitor():
+    """System monitoring for data poisoning defense"""
+    st.markdown("### 💻 SYSTEM MONITORING")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("⚡ CPU Usage", f"{psutil.cpu_percent()}%")
+        st.progress(psutil.cpu_percent() / 100)
+    
+    with col2:
+        memory = psutil.virtual_memory()
+        st.metric("💾 Memory Usage", f"{memory.percent}%")
+        st.progress(memory.percent / 100)
+    
+    with col3:
+        disk = psutil.disk_usage('/')
+        st.metric("💽 Disk Usage", f"{disk.percent}%")
+        st.progress(disk.percent / 100)
+    
+    with col4:
+        st.metric("🖥️ Running Processes", len(psutil.pids()))
+    
+    # Real-time monitoring
+    st.markdown("#### 📈 REAL-TIME DEFENSE METRICS")
+    
+    if st.button("🔄 Refresh Metrics", key="refresh_metrics"):
+        st.rerun()
+    
+    # Simulate real-time data
+    time_points = list(range(1, 11))
+    attack_attempts = [random.randint(5, 20) for _ in time_points]
+    blocked_attacks = [max(0, a - random.randint(0, 5)) for a in attack_attempts]
+    
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=time_points, y=attack_attempts, name='🎯 Attack Attempts', line=dict(color='#ff4444')))
+    fig.add_trace(go.Scatter(x=time_points, y=blocked_attacks, name='🛡️ Blocked Attacks', line=dict(color='#00ff00')))
+    fig.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)', 
+        plot_bgcolor='rgba(0,0,0,0)', 
+        font=dict(color='white'),
+        title="Real-time Attack Defense Monitoring"
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+# --- MAIN DASHBOARD ---
 
 def render_main_dashboard():
     """Main data poisoning defense dashboard"""
@@ -1375,9 +1520,23 @@ def render_main_dashboard():
     </div>
     """, unsafe_allow_html=True)
     
+    # Installation instructions in sidebar
+    with st.sidebar:
+        st.markdown("### 📦 Installation Guide")
+        st.markdown("""
+        **For enhanced features:**
+        ```bash
+        pip install yfinance
+        ```
+        
+        **Current Status:**
+        - yfinance: {'✅ Available' if YFINANCE_AVAILABLE else '❌ Not Installed'}
+        - Kaggle: ❌ (Simulated - No API required)
+        """)
+    
     # Quick actions
     st.markdown("### 🚀 DEFENSE ACTIONS")
-    cols = st.columns(6)
+    cols = st.columns(7)
     
     with cols[0]:
         if st.button("🧪 Attack Sim", use_container_width=True, key="quick_attack"):
@@ -1400,6 +1559,10 @@ def render_main_dashboard():
             st.session_state.current_tab = "Data Upload Center"
     
     with cols[5]:
+        if st.button("🇮🇳 India Data", use_container_width=True, key="quick_india"):
+            st.session_state.current_tab = "Indian Data Sources"
+    
+    with cols[6]:
         if st.button("🔒 Logout", use_container_width=True, key="quick_logout"):
             st.session_state.authenticated = False
             st.rerun()
@@ -1415,20 +1578,17 @@ def render_main_dashboard():
         "🔬 Advanced Detection",
         "📁 Data Upload Center", 
         "🇮🇳 Indian Data Sources",
-        "📊 Live Data Integration"
+        "📊 Live Data Integration",
+        "💻 System Monitor"
     ])
     
     with tabs[0]:
-        # Import or define the original simulator function
-        from app import render_data_poisoning_simulator
         render_data_poisoning_simulator()
     
     with tabs[1]:
-        from app import render_poisoning_detector
         render_poisoning_detector()
     
     with tabs[2]:
-        from app import render_defense_mechanisms
         render_defense_mechanisms()
     
     with tabs[3]:
@@ -1442,6 +1602,9 @@ def render_main_dashboard():
     
     with tabs[6]:
         render_live_data_integration()
+    
+    with tabs[7]:
+        render_system_monitor()
 
 # --- MAIN APPLICATION ---
 
