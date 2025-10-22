@@ -48,12 +48,19 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# API Configuration
-API_KEYS = {
-    'alpha_vantage': 'YOUR_ALPHA_VANTAGE_API_KEY',
-    'finnhub': 'YOUR_FINNHUB_API_KEY', 
-    'fmp': 'YOUR_FMP_API_KEY'
-}
+# API Configuration from Streamlit Secrets
+try:
+    API_KEYS = {
+        'alpha_vantage': st.secrets.get("ALPHA_VANTAGE_API_KEY", "demo"),
+        'finnhub': st.secrets.get("FINNHUB_API_KEY", "demo"),
+        'fmp': st.secrets.get("FMP_API_KEY", "demo")
+    }
+except:
+    API_KEYS = {
+        'alpha_vantage': "demo",
+        'finnhub': "demo", 
+        'fmp': "demo"
+    }
 
 # Optional imports with error handling
 try:
@@ -1395,41 +1402,29 @@ def render_defense_systems_control():
 
 # --- ENHANCED MAIN INTERFACE ---
 
-def render_cyber_terminal():
-    """Enhanced cyber defense terminal interface"""
+def render_terminal_header():
+    """Render the enterprise terminal header"""
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
     
-    # Render terminal header
-    render_terminal_header()
-    
-    # Enhanced navigation tabs
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "📊 DASHBOARD", 
-        "🎯 THREAT INTEL", 
-        "🛡️ DEFENSE OPS", 
-        "🔬 ANALYTICS",
-        "📋 SYSTEM LOGS",
-        "⚙️ COMMAND CENTER"
-    ])
-    
-    with tab1:
-        render_enhanced_dashboard()
-    
-    with tab2:
-        render_threat_intelligence()
-    
-    with tab3:
-        render_defense_systems_control()
-    
-    with tab4:
-        render_advanced_analytics()
-    
-    with tab5:
-        render_system_logs()
-    
-    with tab6:
-        render_command_center()
+    st.markdown(f"""
+    <div class="terminal-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; color: #00ffff;">
+            <div style="display: flex; align-items: center;">
+                <h1 style="margin: 0; font-family: 'Orbitron', sans-serif; font-size: 2rem;">
+                    🛡️ CYBER DEFENSE TERMINAL
+                </h1>
+                <span style="margin-left: 2rem; font-family: 'Share Tech Mono', monospace;">
+                    DATA POISONING SOC
+                </span>
+            </div>
+            <div style="text-align: right; font-family: 'Share Tech Mono', monospace;">
+                <div>SYSTEM STATUS: <span style="color: #00ff00;">OPERATIONAL</span></div>
+                <div>{current_time}</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-# Update the existing functions to integrate with new systems
 def render_threat_intelligence():
     """Enhanced threat intelligence with real-time data"""
     st.markdown("### 🎯 ENHANCED THREAT INTELLIGENCE")
@@ -1597,6 +1592,85 @@ def render_command_center():
                 </div>
             </div>
             """, unsafe_allow_html=True)
+
+def render_login():
+    """Enterprise terminal login"""
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #001122 0%, #003366 100%);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Share Tech Mono', monospace;
+    ">
+        <div style="
+            background: rgba(0, 20, 40, 0.9);
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 0 50px #00ffff33;
+            width: 400px;
+        ">
+            <h1 style="color: #00ffff; margin-bottom: 2rem;">🛡️ CYBER DEFENSE TERMINAL</h1>
+            <h3 style="color: #00ff00; margin-bottom: 2rem;">SECURE ACCESS REQUIRED</h3>
+    """, unsafe_allow_html=True)
+    
+    with st.form("enterprise_login"):
+        username = st.text_input("OPERATOR ID:", placeholder="Enter operator ID")
+        password = st.text_input("ACCESS CODE:", type="password", placeholder="Enter access code")
+        facility = st.selectbox("FACILITY:", ["PRIMARY SOC", "SECONDARY SOC", "FIELD OPERATIONS"])
+        
+        if st.form_submit_button("🚀 INITIATE SYSTEM ACCESS", use_container_width=True):
+            if username == "operator" and password == "defense123":
+                st.session_state.authenticated = True
+                st.session_state.login_time = datetime.now()
+                st.session_state.facility = facility
+                st.success("✅ ACCESS GRANTED | INITIALIZING TERMINAL...")
+                time.sleep(2)
+                st.rerun()
+            else:
+                st.error("❌ ACCESS DENIED | INVALID CREDENTIALS")
+    
+    st.markdown("""
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def render_cyber_terminal():
+    """Enhanced cyber defense terminal interface"""
+    
+    # Render terminal header
+    render_terminal_header()
+    
+    # Enhanced navigation tabs
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        "📊 DASHBOARD", 
+        "🎯 THREAT INTEL", 
+        "🛡️ DEFENSE OPS", 
+        "🔬 ANALYTICS",
+        "📋 SYSTEM LOGS",
+        "⚙️ COMMAND CENTER"
+    ])
+    
+    with tab1:
+        render_enhanced_dashboard()
+    
+    with tab2:
+        render_threat_intelligence()
+    
+    with tab3:
+        render_defense_systems_control()
+    
+    with tab4:
+        render_advanced_analytics()
+    
+    with tab5:
+        render_system_logs()
+    
+    with tab6:
+        render_command_center()
 
 # --- MAIN APPLICATION ---
 
