@@ -398,7 +398,8 @@ class RealTimeDataEngine:
                 'timestamp': latest_timestamp,
                 'high': float(latest_data['2. high']),
                 'low': float(latest_data['3. low']),
-                'open': float(latest_data['1. open'])
+                'open': float(latest_data['1. open']),
+                'source': 'Alpha Vantage'
             }
         return {}
     
@@ -412,7 +413,8 @@ class RealTimeDataEngine:
             'low': data.get('l', 0),
             'open': data.get('o', 0),
             'previous_close': data.get('pc', 0),
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now().isoformat(),
+            'source': 'Finnhub'
         }
     
     def _parse_fmp(self, data):
@@ -424,7 +426,8 @@ class RealTimeDataEngine:
             'volume': data.get('volume', 0),
             'avg_volume': data.get('avgVolume', 0),
             'market_cap': data.get('marketCap', 0),
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now().isoformat(),
+            'source': 'Financial Modeling Prep'
         }
     
     def _generate_mock_data(self, symbol, source):
@@ -439,7 +442,7 @@ class RealTimeDataEngine:
             'low': base_price - random.uniform(1, 3),
             'open': base_price + random.uniform(-1, 1),
             'timestamp': datetime.now().isoformat(),
-            'source': f'mock_{source}'
+            'source': f'Mock {source}'
         }
 
 class AdvancedDefenseSystems:
@@ -832,7 +835,7 @@ class AdvancedAnalyticsEngine:
 # --- ENHANCED UI COMPONENTS ---
 
 def render_enhanced_dashboard():
-    """Render enhanced dashboard with real-time data"""
+    """Render enhanced dashboard with individual data source buttons"""
     st.markdown("### 📊 ENHANCED SECURITY DASHBOARD")
     
     # Initialize systems
@@ -847,34 +850,81 @@ def render_enhanced_dashboard():
     defense_systems = st.session_state.defense_systems
     analytics_engine = st.session_state.analytics_engine
     
-    # Real-time data monitoring
+    # Real-time data monitoring with individual buttons
     col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
         st.markdown("#### 🔄 REAL-TIME DATA")
-        if st.button("🔄 FETCH MARKET DATA", key="fetch_market"):
-            with st.spinner("Fetching real-time data..."):
-                # Simulate fetching multiple symbols
-                symbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'SPY']
-                results = []
-                
-                for symbol in symbols:
-                    # In a real implementation, use asyncio here
-                    mock_data = data_engine._generate_mock_data(symbol, 'enhanced')
-                    results.append(mock_data)
-                
-                st.session_state.market_data = results
-            
-        if 'market_data' in st.session_state:
-            for data in st.session_state.market_data[:3]:
-                change_color = "#00ff00" if data.get('change', 0) >= 0 else "#ff4444"
-                st.markdown(f"""
-                <div class="data-panel">
-                    <div style="color: #00ffff;">SYMBOL</div>
-                    <div>Price: <span style="color: {change_color};">${data['price']:.2f}</span></div>
-                    <div>Change: <span style="color: {change_color};">{data.get('change', 0):.2f}</span></div>
-                </div>
-                """, unsafe_allow_html=True)
+        
+        # Individual data source buttons
+        col_btn1, col_btn2, col_btn3 = st.columns(3)
+        
+        with col_btn1:
+            if st.button("📊 Alpha Vantage", key="alpha_vantage_btn", use_container_width=True):
+                with st.spinner("Fetching Alpha Vantage data..."):
+                    symbols = ['AAPL', 'GOOGL', 'MSFT']
+                    results = []
+                    for symbol in symbols:
+                        # In a real implementation, use asyncio here
+                        mock_data = data_engine._generate_mock_data(symbol, 'Alpha Vantage')
+                        mock_data['source'] = 'Alpha Vantage'
+                        results.append(mock_data)
+                    st.session_state.alpha_vantage_data = results
+                    st.session_state.current_data_source = 'Alpha Vantage'
+                    st.success(f"✅ Alpha Vantage data fetched for {len(symbols)} symbols")
+        
+        with col_btn2:
+            if st.button("🌐 Finnhub", key="finnhub_btn", use_container_width=True):
+                with st.spinner("Fetching Finnhub data..."):
+                    symbols = ['TSLA', 'AMZN', 'META']
+                    results = []
+                    for symbol in symbols:
+                        mock_data = data_engine._generate_mock_data(symbol, 'Finnhub')
+                        mock_data['source'] = 'Finnhub'
+                        results.append(mock_data)
+                    st.session_state.finnhub_data = results
+                    st.session_state.current_data_source = 'Finnhub'
+                    st.success(f"✅ Finnhub data fetched for {len(symbols)} symbols")
+        
+        with col_btn3:
+            if st.button("📈 FMP", key="fmp_btn", use_container_width=True):
+                with st.spinner("Fetching FMP data..."):
+                    symbols = ['NFLX', 'NVDA', 'AMD']
+                    results = []
+                    for symbol in symbols:
+                        mock_data = data_engine._generate_mock_data(symbol, 'FMP')
+                        mock_data['source'] = 'Financial Modeling Prep'
+                        results.append(mock_data)
+                    st.session_state.fmp_data = results
+                    st.session_state.current_data_source = 'Financial Modeling Prep'
+                    st.success(f"✅ FMP data fetched for {len(symbols)} symbols")
+        
+        # Display current data source status
+        if hasattr(st.session_state, 'current_data_source'):
+            st.markdown(f"""
+            <div class="data-panel">
+                <div style="color: #00ffff;">ACTIVE SOURCE</div>
+                <div style="color: #00ff00;">{st.session_state.current_data_source}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Display sample data from current source
+        if hasattr(st.session_state, 'current_data_source'):
+            source_key = f"{st.session_state.current_data_source.lower().replace(' ', '_')}_data"
+            if source_key in st.session_state:
+                data = st.session_state[source_key]
+                if data:
+                    st.markdown("##### 📊 SAMPLE DATA")
+                    for stock_data in data[:2]:  # Show first 2 stocks
+                        change_color = "#00ff00" if stock_data.get('change', 0) >= 0 else "#ff4444"
+                        st.markdown(f"""
+                        <div class="data-panel">
+                            <div style="color: #00ffff;">${stock_data['price']:.2f}</div>
+                            <div style="color: {change_color}; font-size: 0.8rem;">
+                                {stock_data.get('change', 0):.2f} ({stock_data.get('change_percent', 0):.2f}%)
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("#### 🛡️ DEFENSE STATUS")
@@ -890,11 +940,19 @@ def render_enhanced_dashboard():
     with col3:
         st.markdown("#### 📈 ANALYTICS ENGINE")
         if st.button("🧠 RUN ANALYSIS", key="run_analysis"):
-            if 'market_data' in st.session_state:
-                analysis = analytics_engine.perform_comprehensive_analysis(
-                    st.session_state.market_data
-                )
+            # Use the most recently fetched data
+            data_to_analyze = None
+            if hasattr(st.session_state, 'current_data_source'):
+                source_key = f"{st.session_state.current_data_source.lower().replace(' ', '_')}_data"
+                if source_key in st.session_state:
+                    data_to_analyze = st.session_state[source_key]
+            
+            if data_to_analyze:
+                analysis = analytics_engine.perform_comprehensive_analysis(data_to_analyze)
                 st.session_state.latest_analysis = analysis
+                st.success("✅ Analysis completed!")
+            else:
+                st.warning("⚠️ Please fetch data first!")
             
         if 'latest_analysis' in st.session_state:
             analysis = st.session_state.latest_analysis
@@ -917,9 +975,22 @@ def render_enhanced_dashboard():
     with col4:
         st.markdown("#### 🎯 THREAT MONITORING")
         if st.button("🔍 SCAN FOR THREATS", key="scan_threats"):
-            if 'market_data' in st.session_state:
-                alerts = defense_systems.monitor_data_stream(st.session_state.market_data)
+            # Use the most recently fetched data
+            data_to_scan = None
+            if hasattr(st.session_state, 'current_data_source'):
+                source_key = f"{st.session_state.current_data_source.lower().replace(' ', '_')}_data"
+                if source_key in st.session_state:
+                    data_to_scan = st.session_state[source_key]
+            
+            if data_to_scan:
+                alerts = defense_systems.monitor_data_stream(data_to_scan)
                 st.session_state.active_alerts = alerts
+                if alerts:
+                    st.warning(f"🚨 {len(alerts)} threats detected!")
+                else:
+                    st.success("✅ No threats detected")
+            else:
+                st.warning("⚠️ Please fetch data first!")
             
         if 'active_alerts' in st.session_state:
             alerts = st.session_state.active_alerts
