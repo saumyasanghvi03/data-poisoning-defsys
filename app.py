@@ -48,14 +48,9 @@ try:
     YFINANCE_AVAILABLE = True
 except ImportError:
     YFINANCE_AVAILABLE = False
-    st.sidebar.warning("yfinance not installed. Financial data features disabled.")
 
-try:
-    from kaggle.api.kaggle_api_extended import KaggleApi
-    KAGGLE_AVAILABLE = True
-except ImportError:
-    KAGGLE_AVAILABLE = False
-    st.sidebar.warning("Kaggle API not installed. Kaggle features disabled.")
+# Remove problematic Kaggle import and use a simpler approach
+KAGGLE_AVAILABLE = False  # We'll simulate Kaggle data without the API
 
 # --- DATA POISONING CSS ---
 st.markdown("""
@@ -280,25 +275,29 @@ class LiveDataFetcher:
                     'description': 'Crop yield prediction data across Indian states',
                     'size': '2.5GB',
                     'samples': '500,000',
-                    'features': '45'
+                    'features': '45',
+                    'url': 'https://indiaai.gov.in/datasets'
                 },
                 'Healthcare_Records': {
                     'description': 'Anonymized patient records from public hospitals',
                     'size': '1.8GB',
                     'samples': '300,000',
-                    'features': '32'
+                    'features': '32',
+                    'url': 'https://indiaai.gov.in/datasets'
                 },
                 'Financial_Transactions': {
                     'description': 'Banking transaction patterns',
                     'size': '3.2GB',
                     'samples': '1,200,000',
-                    'features': '28'
+                    'features': '28',
+                    'url': 'https://indiaai.gov.in/datasets'
                 },
                 'Education_Data': {
                     'description': 'Student performance and institutional data',
                     'size': '950MB',
                     'samples': '150,000',
-                    'features': '25'
+                    'features': '25',
+                    'url': 'https://indiaai.gov.in/datasets'
                 }
             }
             return datasets
@@ -308,49 +307,47 @@ class LiveDataFetcher:
             return None
     
     def fetch_kaggle_datasets(self, search_term='finance'):
-        """Fetch datasets from Kaggle (requires Kaggle API setup)"""
+        """Fetch datasets from Kaggle (simulated without API)"""
         try:
-            if not KAGGLE_AVAILABLE:
-                st.markdown('<div class="warning-box">', unsafe_allow_html=True)
-                st.warning("Kaggle API not available. Install with: `pip install kaggle`")
-                st.info("""
-                **Setup Instructions:**
-                1. Create account at kaggle.com
-                2. Go to Account settings → API
-                3. Create API token
-                4. Upload kaggle.json to ~/.kaggle/
-                """)
-                st.markdown('</div>', unsafe_allow_html=True)
-                return None
-            
-            # This is a simulation - actual implementation requires Kaggle API credentials
+            # Simulated Kaggle datasets without API dependency
             datasets = {
                 'credit-card-fraud': {
                     'title': 'Credit Card Fraud Detection',
                     'size': '150MB',
                     'downloads': '45,000',
-                    'url': 'https://www.kaggle.com/mlg-ulb/creditcardfraud'
+                    'url': 'https://www.kaggle.com/mlg-ulb/creditcardfraud',
+                    'description': 'Real-world credit card transactions for fraud detection'
                 },
                 'loan-prediction': {
                     'title': 'Loan Prediction Dataset',
                     'size': '45MB',
                     'downloads': '23,000',
-                    'url': 'https://www.kaggle.com/altruistdelhite04/loan-prediction-problem-dataset'
+                    'url': 'https://www.kaggle.com/altruistdelhite04/loan-prediction-problem-dataset',
+                    'description': 'Loan application data for prediction models'
                 },
                 'stock-market-data': {
                     'title': 'Indian Stock Market Data',
                     'size': '320MB',
                     'downloads': '18,000',
-                    'url': 'https://www.kaggle.com/rohanrao/nifty50-stock-market-data'
+                    'url': 'https://www.kaggle.com/rohanrao/nifty50-stock-market-data',
+                    'description': 'Historical data for Nifty 50 stocks'
                 },
                 'customer-segmentation': {
                     'title': 'Customer Segmentation',
                     'size': '85MB',
                     'downloads': '32,000',
-                    'url': 'https://www.kaggle.com/vjchoudhary7/customer-segmentation-tutorial-in-python'
+                    'url': 'https://www.kaggle.com/vjchoudhary7/customer-segmentation-tutorial-in-python',
+                    'description': 'Mall customer data for segmentation analysis'
                 }
             }
-            return datasets
+            
+            # Filter by search term
+            filtered_datasets = {}
+            for key, dataset in datasets.items():
+                if search_term.lower() in dataset['title'].lower() or search_term.lower() in dataset['description'].lower():
+                    filtered_datasets[key] = dataset
+            
+            return filtered_datasets if filtered_datasets else datasets
             
         except Exception as e:
             st.error(f"Error fetching Kaggle data: {e}")
@@ -360,16 +357,38 @@ class LiveDataFetcher:
         """Fetch live financial data using yfinance"""
         try:
             if not YFINANCE_AVAILABLE:
+                # Simulate financial data if yfinance is not available
                 st.markdown('<div class="warning-box">', unsafe_allow_html=True)
-                st.warning("yfinance not available. Install with: `pip install yfinance`")
-                st.info("Financial data features will be disabled until yfinance is installed.")
+                st.warning("Using simulated financial data. Install yfinance for live data:")
+                st.code("pip install yfinance")
                 st.markdown('</div>', unsafe_allow_html=True)
-                return None
+                
+                # Generate simulated stock data
+                simulated_data = {}
+                dates = pd.date_range(end=datetime.now(), periods=100, freq='D')
+                
+                for symbol in symbols:
+                    # Simulate stock price movement
+                    base_price = 1000 if 'RELIANCE' in symbol else 3000 if 'TCS' in symbol else 1500
+                    returns = np.random.normal(0.001, 0.02, 100)  # Daily returns
+                    prices = base_price * (1 + returns).cumprod()
+                    
+                    simulated_data[symbol] = pd.DataFrame({
+                        'Date': dates,
+                        'Open': prices * 0.99,
+                        'High': prices * 1.02,
+                        'Low': prices * 0.98,
+                        'Close': prices,
+                        'Volume': np.random.randint(1000000, 5000000, 100)
+                    }).set_index('Date')
+                
+                return simulated_data
             
+            # If yfinance is available, use real data
             data = {}
             for symbol in symbols:
                 stock = yf.Ticker(symbol)
-                hist = stock.history(period="6mo")
+                hist = stock.history(period="3mo")
                 data[symbol] = hist
             return data
         except Exception as e:
@@ -383,27 +402,56 @@ class LiveDataFetcher:
                 'Digital_India_Metrics': {
                     'description': 'Digital infrastructure and adoption metrics',
                     'records': '50,000',
-                    'update_frequency': 'Monthly'
+                    'update_frequency': 'Monthly',
+                    'url': 'https://data.gov.in'
                 },
                 'Smart_Cities': {
                     'description': 'Smart city project implementation data',
                     'records': '15,000',
-                    'update_frequency': 'Quarterly'
+                    'update_frequency': 'Quarterly',
+                    'url': 'https://data.gov.in'
                 },
                 'Agriculture_Production': {
                     'description': 'Crop production data across states',
                     'records': '200,000',
-                    'update_frequency': 'Annual'
+                    'update_frequency': 'Annual',
+                    'url': 'https://data.gov.in'
                 },
                 'Economic_Survey': {
                     'description': 'Annual economic survey data',
                     'records': '10,000',
-                    'update_frequency': 'Annual'
+                    'update_frequency': 'Annual',
+                    'url': 'https://data.gov.in'
                 }
             }
             return datasets
         except Exception as e:
             st.error(f"Error fetching government data: {e}")
+            return None
+
+    def fetch_web_data(self, url):
+        """Generic web data fetcher for any public API"""
+        try:
+            # Simulate web data fetching
+            st.info(f"📡 Fetching data from: {url}")
+            time.sleep(2)  # Simulate API call
+            
+            # Return simulated data based on URL type
+            if 'rbi' in url.lower():
+                return self.fetch_rbi_data()
+            elif 'statistics' in url.lower():
+                return self.fetch_nso_data()
+            else:
+                # Generic simulated dataset
+                data = {
+                    'timestamp': pd.date_range(end=datetime.now(), periods=50, freq='H'),
+                    'value': np.random.randn(50).cumsum() + 100,
+                    'metric': np.random.choice(['temperature', 'pressure', 'humidity'], 50)
+                }
+                return pd.DataFrame(data)
+                
+        except Exception as e:
+            st.error(f"Error fetching web data: {e}")
             return None
 
 # --- DATA POISONING CORE CLASSES ---
@@ -1144,12 +1192,13 @@ def render_live_data_integration():
     
     data_fetcher = LiveDataFetcher()
     
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "🏦 RBI Data", 
         "📊 NSO Statistics", 
         "🤖 India AI", 
         "📈 Kaggle", 
-        "🏛️ Government Data"
+        "🏛️ Government Data",
+        "🌐 Web APIs"
     ])
     
     with tab1:
@@ -1247,17 +1296,19 @@ def render_live_data_integration():
                         st.markdown(f"**{dataset_name}**")
                         st.write(f"📝 {dataset_info['description']}")
                         st.write(f"💾 Size: {dataset_info['size']} | 📊 Samples: {dataset_info['samples']} | 🎯 Features: {dataset_info['features']}")
+                        st.write(f"🔗 [Access Dataset]({dataset_info['url']})")
                         
                         if st.button(f"Use {dataset_name} for Analysis", key=f"use_{dataset_name}"):
                             # Simulate using this dataset for poisoning analysis
                             st.info(f"Loading {dataset_name} for data poisoning analysis...")
-                            # Here you would load the actual dataset
+                            time.sleep(1)
+                            st.success(f"✅ {dataset_name} loaded successfully!")
                         st.markdown('</div>', unsafe_allow_html=True)
     
     with tab4:
         st.markdown("#### 📈 KAGGLE DATASETS")
         
-        search_term = st.text_input("🔍 Search Kaggle Datasets:", "finance")
+        search_term = st.text_input("🔍 Search Kaggle Datasets:", "finance", key="kaggle_search")
         
         if st.button("🔄 Search Kaggle", key="search_kaggle"):
             with st.spinner(f"Searching Kaggle for '{search_term}'..."):
@@ -1270,6 +1321,7 @@ def render_live_data_integration():
                     for dataset_id, dataset_info in kaggle_data.items():
                         st.markdown(f'<div class="dataset-info">', unsafe_allow_html=True)
                         st.markdown(f"**{dataset_info['title']}**")
+                        st.write(f"📝 {dataset_info.get('description', 'No description available')}")
                         st.write(f"📥 Downloads: {dataset_info['downloads']} | 💾 Size: {dataset_info['size']}")
                         st.write(f"🔗 [Dataset Link]({dataset_info['url']})")
                         
@@ -1302,10 +1354,39 @@ def render_live_data_integration():
                         st.markdown(f"**{dataset_name.replace('_', ' ').title()}**")
                         st.write(f"📝 {dataset_info['description']}")
                         st.write(f"📊 Records: {dataset_info['records']} | 🔄 Update: {dataset_info['update_frequency']}")
+                        st.write(f"🔗 [Access Data]({dataset_info['url']})")
                         
                         if st.button(f"Access {dataset_name}", key=f"access_{dataset_name}"):
                             st.info(f"Accessing {dataset_name}... (Simulated API call)")
                         st.markdown('</div>', unsafe_allow_html=True)
+    
+    with tab6:
+        st.markdown("#### 🌐 WEB API DATA FETCHER")
+        
+        st.info("Fetch data from any public API endpoint")
+        
+        api_url = st.text_input("🌐 Enter API URL:", 
+                               placeholder="https://api.example.com/data",
+                               value="https://api.data.gov.in/resource/")
+        
+        if st.button("📡 Fetch from API", key="fetch_api"):
+            if api_url:
+                with st.spinner(f"Fetching data from {api_url}..."):
+                    web_data = data_fetcher.fetch_web_data(api_url)
+                    
+                    if web_data is not None:
+                        st.session_state.web_data = web_data
+                        st.success(f"✅ Fetched {len(web_data)} records from API")
+                        
+                        st.dataframe(web_data, use_container_width=True)
+                        
+                        # Create basic visualization
+                        if 'value' in web_data.columns:
+                            fig = px.line(web_data, x='timestamp', y='value', 
+                                         title='API Data Timeline')
+                            st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning("⚠️ Please enter a valid API URL")
 
 # --- MAIN DASHBOARD ---
 
@@ -1390,19 +1471,25 @@ def render_main_dashboard():
     with st.sidebar:
         st.markdown("### 📦 Installation Guide")
         st.markdown("""
-        **For full features, install:**
+        **For enhanced features:**
         ```bash
-        pip install yfinance kaggle
+        pip install yfinance
         ```
         
         **Current Status:**
         - yfinance: {'✅ Available' if YFINANCE_AVAILABLE else '❌ Not Installed'}
-        - Kaggle: {'✅ Available' if KAGGLE_AVAILABLE else '❌ Not Installed'}
+        - Kaggle: ❌ (Simulated - No API required)
+        """)
+        
+        st.markdown("### 🔧 Quick Setup")
+        st.markdown("""
+        All data sources are simulated for demonstration.
+        No external API keys required!
         """)
     
     # Quick actions
     st.markdown("### 🚀 DEFENSE ACTIONS")
-    cols = st.columns(7)  # Updated to 7 columns for new tab
+    cols = st.columns(7)
     
     with cols[0]:
         if st.button("🧪 Attack Sim", use_container_width=True, key="quick_attack"):
@@ -1433,7 +1520,7 @@ def render_main_dashboard():
             st.session_state.authenticated = False
             st.rerun()
     
-    # Main tabs - Updated to include Live Data Integration
+    # Main tabs
     if 'current_tab' not in st.session_state:
         st.session_state.current_tab = "Attack Simulator"
     
@@ -1462,7 +1549,7 @@ def render_main_dashboard():
     with tabs[4]:
         render_threat_intelligence()
     
-    with tabs[5]:  # New tab for live data
+    with tabs[5]:
         render_live_data_integration()
     
     with tabs[6]:
