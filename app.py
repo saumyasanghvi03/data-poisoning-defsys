@@ -39,10 +39,10 @@ except (ImportError, ValueError):
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="DATA POISONING DEFENSE PLATFORM",
-    page_icon="🧪",
+    page_title="CYBER DEFENSE TERMINAL | DATA POISONING SOC",
+    page_icon="🛡️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # Optional imports with error handling
@@ -52,175 +52,236 @@ try:
 except ImportError:
     YFINANCE_AVAILABLE = False
 
-# Remove problematic Kaggle import and use a simpler approach
-KAGGLE_AVAILABLE = False  # We'll simulate Kaggle data without the API
-
-# --- ENHANCED CSS STYLES ---
+# --- ENTERPRISE TERMINAL CSS ---
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
     
-    .neuro-header {
-        background: linear-gradient(135deg, #0f0c29 0%, #302b63 30%, #24243e 70%, #000000 100%);
-        color: white;
-        padding: 2.5rem;
-        border-radius: 20px;
-        border: 1px solid #00ffff;
-        box-shadow: 0 0 50px #00ffff33, inset 0 0 100px #00ffff11, 0 0 0 1px #00ffff22;
-        margin-bottom: 2rem;
-        position: relative;
-        overflow: hidden;
-        text-align: center;
-        backdrop-filter: blur(20px);
+    /* Main terminal styling */
+    .main {
+        background: #000000 !important;
+        color: #00ff00 !important;
+        font-family: 'Share Tech Mono', monospace !important;
     }
     
-    .neuro-header::before {
-        content: '';
-        position: absolute;
+    .terminal-header {
+        background: linear-gradient(90deg, #001122 0%, #002244 50%, #001122 100%);
+        border-bottom: 2px solid #00ffff;
+        padding: 1rem 2rem;
+        margin: -1rem -1rem 1rem -1rem;
+        box-shadow: 0 0 30px #00ffff33;
+    }
+    
+    .terminal-metric {
+        background: rgba(0, 255, 255, 0.05);
+        border: 1px solid #00ffff;
+        border-radius: 4px;
+        padding: 0.8rem;
+        margin: 0.2rem;
+        font-family: 'Share Tech Mono', monospace;
+    }
+    
+    .alert-critical {
+        background: linear-gradient(90deg, #ff0000 0%, #8b0000 100%);
+        border: 1px solid #ff4444;
+        border-left: 5px solid #ff0000;
+        color: white;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        animation: blink-critical 2s infinite;
+    }
+    
+    .alert-high {
+        background: linear-gradient(90deg, #ff6b00 0%, #cc5500 100%);
+        border: 1px solid #ffaa00;
+        border-left: 5px solid #ff6b00;
+        color: white;
+        padding: 1rem;
+        margin: 0.5rem 0;
+    }
+    
+    .alert-medium {
+        background: linear-gradient(90deg, #ffd000 0%, #ccaa00 100%);
+        border: 1px solid #ffff00;
+        border-left: 5px solid #ffd000;
+        color: black;
+        padding: 1rem;
+        margin: 0.5rem 0;
+    }
+    
+    .alert-low {
+        background: linear-gradient(90deg, #00ff00 0%, #00cc00 100%);
+        border: 1px solid #00ff00;
+        border-left: 5px solid #00ff00;
+        color: white;
+        padding: 1rem;
+        margin: 0.5rem 0;
+    }
+    
+    @keyframes blink-critical {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0.7; }
+    }
+    
+    .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+    
+    .status-online { background: #00ff00; box-shadow: 0 0 10px #00ff00; }
+    .status-warning { background: #ffff00; box-shadow: 0 0 10px #ffff00; }
+    .status-offline { background: #ff0000; box-shadow: 0 0 10px #ff0000; }
+    
+    .data-panel {
+        background: rgba(0, 20, 40, 0.8);
+        border: 1px solid #00ffff;
+        border-radius: 4px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        font-family: 'Share Tech Mono', monospace;
+    }
+    
+    .command-line {
+        background: #001122;
+        border: 1px solid #00ffff;
+        border-radius: 4px;
+        padding: 0.5rem;
+        font-family: 'Share Tech Mono', monospace;
+        color: #00ff00;
+    }
+    
+    .log-entry {
+        background: rgba(0, 255, 255, 0.05);
+        border-left: 3px solid #00ffff;
+        padding: 0.5rem;
+        margin: 0.2rem 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+    }
+    
+    .cyber-button {
+        background: linear-gradient(90deg, #001122 0%, #003366 100%);
+        border: 1px solid #00ffff;
+        color: #00ffff;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-family: 'Share Tech Mono', monospace;
+        transition: all 0.3s ease;
+    }
+    
+    .cyber-button:hover {
+        background: linear-gradient(90deg, #003366 0%, #0055aa 100%);
+        box-shadow: 0 0 15px #00ffff;
+    }
+    
+    /* Streamlit component overrides */
+    .stTabs [data-baseweb="tab-list"] {
+        background: #001122;
+        border-bottom: 1px solid #00ffff;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: #001122;
+        color: #00ffff;
+        border: 1px solid #00ffff;
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+        margin-right: 2px;
+        font-family: 'Share Tech Mono', monospace;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: #003366 !important;
+        color: #00ffff !important;
+    }
+    
+    /* Hide Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #001122;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #00ffff;
+        border-radius: 4px;
+    }
+    
+    /* Matrix rain effect container */
+    .matrix-container {
+        position: fixed;
         top: 0;
-        left: -100%;
+        left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, #00ffff22, transparent);
-        animation: neuro-shimmer 6s infinite;
-    }
-    
-    @keyframes neuro-shimmer {
-        0% { left: -100%; }
-        50% { left: 100%; }
-        100% { left: 100%; }
-    }
-    
-    .poison-alert {
-        background: linear-gradient(135deg, #4a1f1f, #2d1a1a);
-        border: 1px solid #ff4444;
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-        animation: pulse-red 2s infinite;
-    }
-    
-    @keyframes pulse-red {
-        0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
-    }
-    
-    .defense-success {
-        background: linear-gradient(135deg, #1f4a2e, #1a2d1f);
-        border: 1px solid #00ff00;
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-    }
-    
-    .data-terminal {
-        background-color: #000000;
-        color: #00ff00;
-        font-family: 'Courier New', monospace;
-        padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid #00ff00;
-        height: 300px;
-        overflow-y: scroll;
-        white-space: pre-wrap;
-    }
-    
-    .explanation-box {
-        background: rgba(0, 255, 255, 0.1);
-        border: 1px solid #00ffff;
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 1rem 0;
-        font-family: 'Exo 2', sans-serif;
-    }
-    
-    .threat-level-critical { background: linear-gradient(45deg, #ff0000, #ff6b00); color: white; padding: 0.5rem; border-radius: 5px; }
-    .threat-level-high { background: linear-gradient(45deg, #ff6b00, #ffd000); color: black; padding: 0.5rem; border-radius: 5px; }
-    .threat-level-medium { background: linear-gradient(45deg, #ffd000, #ffff00); color: black; padding: 0.5rem; border-radius: 5px; }
-    .threat-level-low { background: linear-gradient(45deg, #00ff00, #00cc00); color: white; padding: 0.5rem; border-radius: 5px; }
-    
-    .data-source-card {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 15px;
-        border: 1px solid #00ffff;
-        margin: 0.5rem 0;
-        transition: transform 0.3s ease;
-    }
-    
-    .data-source-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3);
-    }
-    
-    .live-data-badge {
-        background: linear-gradient(45deg, #ff0000, #ff6b00);
-        color: white;
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: bold;
-        animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-        0% { opacity: 1; }
-        50% { opacity: 0.7; }
-        100% { opacity: 1; }
-    }
-    
-    .dataset-info {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-        border-left: 4px solid #00ffff;
-    }
-    
-    .warning-box {
-        background: linear-gradient(135deg, #4a3c1f, #2d281a);
-        border: 1px solid #ffaa00;
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-    }
-    
-    .success-box {
-        background: linear-gradient(135deg, #1f4a2e, #1a2d1f);
-        border: 1px solid #00ff00;
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-    }
-    
-    .info-box {
-        background: linear-gradient(135deg, #1e3c72, #2a5298);
-        border: 1px solid #00ffff;
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-    }
-    
-    .metric-card {
-        background: rgba(0, 255, 255, 0.05);
-        border: 1px solid #00ffff;
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-        text-align: center;
-    }
-    
-    .upload-box {
-        border: 2px dashed #00ffff;
-        border-radius: 10px;
-        padding: 2rem;
-        text-align: center;
-        margin: 1rem 0;
-        background: rgba(0, 255, 255, 0.05);
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0.1;
     }
 </style>
+
+<div class="matrix-container" id="matrixRain"></div>
+
+<script>
+// Simple matrix rain effect
+function createMatrixRain() {
+    const container = document.getElementById('matrixRain');
+    const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+    const fontSize = 14;
+    const columns = Math.floor(window.innerWidth / fontSize);
+    
+    const drops = [];
+    for (let i = 0; i < columns; i++) {
+        drops[i] = 1;
+    }
+    
+    function draw() {
+        const ctx = document.createElement('canvas').getContext('2d');
+        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.height = window.innerHeight;
+        container.appendChild(ctx.canvas);
+        
+        function rain() {
+            ctx.fillStyle = 'rgba(0, 20, 40, 0.05)';
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters[Math.floor(Math.random() * characters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > ctx.canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        setInterval(rain, 33);
+    }
+    
+    draw();
+}
+
+// Start matrix rain when page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', createMatrixRain);
+} else {
+    createMatrixRain();
+}
+</script>
 """, unsafe_allow_html=True)
 
 @contextmanager
@@ -231,71 +292,103 @@ def quantum_resource_manager():
     finally:
         gc.collect()
 
-# --- CORE DATA POISONING CLASSES ---
+# --- ENTERPRISE MONITORING CLASSES ---
 
-class DataPoisoningAttacks:
-    """Simulate various data poisoning attacks"""
+class SecurityOperationsCenter:
+    """Enterprise Security Operations Center Simulation"""
     
     def __init__(self):
-        self.attack_types = {
-            'label_flipping': 'Flip labels of training data',
-            'feature_manipulation': 'Manipulate feature values',
-            'backdoor_injection': 'Inject hidden triggers',
-            'data_replication': 'Duplicate malicious samples',
-            'gradient_manipulation': 'Manipulate model gradients',
-            'model_inversion': 'Extract training data from model'
+        self.incidents = []
+        self.threat_levels = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
+        self.agents = [
+            {'id': 'SOC-AGENT-01', 'status': 'ONLINE', 'location': 'Primary SOC', 'last_seen': datetime.now()},
+            {'id': 'SOC-AGENT-02', 'status': 'ONLINE', 'location': 'Secondary SOC', 'last_seen': datetime.now()},
+            {'id': 'SOC-AGENT-03', 'status': 'MAINTENANCE', 'location': 'DR Site', 'last_seen': datetime.now() - timedelta(hours=2)},
+        ]
+    
+    def generate_incident(self):
+        """Generate a random security incident"""
+        incident_types = [
+            'DATA_POISONING_ATTEMPT', 'UNAUTHORIZED_ACCESS', 'MALWARE_DETECTION',
+            'NETWORK_INTRUSION', 'PRIVILEGE_ESCALATION', 'DATA_EXFILTRATION'
+        ]
+        
+        incident = {
+            'id': f"INC-{random.randint(10000, 99999)}",
+            'type': random.choice(incident_types),
+            'severity': random.choice(self.threat_levels),
+            'timestamp': datetime.now() - timedelta(minutes=random.randint(1, 60)),
+            'source_ip': f"192.168.{random.randint(1,255)}.{random.randint(1,255)}",
+            'target_asset': f"ML-MODEL-{random.choice(['A', 'B', 'C'])}",
+            'status': 'ACTIVE',
+            'assigned_agent': random.choice([agent['id'] for agent in self.agents if agent['status'] == 'ONLINE'])
         }
+        
+        self.incidents.append(incident)
+        return incident
     
-    def label_flipping_attack(self, data, labels, flip_percentage=0.1):
-        """Simulate label flipping attack"""
-        poisoned_data = data.copy()
-        poisoned_labels = labels.copy()
-        
-        num_to_flip = int(len(labels) * flip_percentage)
-        flip_indices = np.random.choice(len(labels), num_to_flip, replace=False)
-        
-        for idx in flip_indices:
-            # Flip to a different class
-            current_class = poisoned_labels[idx]
-            other_classes = [c for c in np.unique(labels) if c != current_class]
-            if other_classes:
-                poisoned_labels[idx] = np.random.choice(other_classes)
-        
-        return poisoned_data, poisoned_labels, flip_indices
-    
-    def feature_manipulation_attack(self, data, manipulation_strength=0.3):
-        """Simulate feature manipulation attack"""
-        poisoned_data = data.copy()
-        num_samples = data.shape[0]
-        num_features = data.shape[1]
-        
-        # Select random samples to poison
-        poison_indices = np.random.choice(num_samples, int(num_samples * 0.05), replace=False)
-        
-        for idx in poison_indices:
-            # Add noise to features
-            noise = np.random.normal(0, manipulation_strength, num_features)
-            poisoned_data[idx] += noise
-        
-        return poisoned_data, poison_indices
-    
-    def backdoor_injection(self, data, labels, trigger_pattern, target_class):
-        """Simulate backdoor injection attack"""
-        poisoned_data = data.copy()
-        poisoned_labels = labels.copy()
-        
-        # Inject trigger into random samples
-        injection_indices = np.random.choice(len(data), int(len(data) * 0.03), replace=False)
-        
-        for idx in injection_indices:
-            # Apply trigger pattern
-            poisoned_data[idx] = poisoned_data[idx] * (1 - trigger_pattern) + trigger_pattern
-            poisoned_labels[idx] = target_class
-        
-        return poisoned_data, poisoned_labels, injection_indices
+    def get_system_status(self):
+        """Get overall system status"""
+        return {
+            'threat_level': random.choice(self.threat_levels),
+            'active_incidents': len([i for i in self.incidents if i['status'] == 'ACTIVE']),
+            'agents_online': len([a for a in self.agents if a['status'] == 'ONLINE']),
+            'defense_systems': random.randint(85, 100),
+            'data_throughput': f"{random.randint(100, 500)} GB/s"
+        }
 
-class DataPoisoningDetector:
-    """Detect data poisoning attacks"""
+class EnterpriseDataMonitor:
+    """Enterprise-grade data monitoring"""
+    
+    def __init__(self):
+        self.metrics_history = []
+        self.anomaly_threshold = 0.8
+    
+    def generate_enterprise_metrics(self):
+        """Generate enterprise monitoring metrics"""
+        current_time = datetime.now()
+        
+        metrics = {
+            'timestamp': current_time,
+            'cpu_utilization': random.uniform(20, 90),
+            'memory_usage': random.uniform(30, 85),
+            'network_throughput': random.uniform(100, 500),
+            'active_connections': random.randint(1000, 5000),
+            'threat_detection_rate': random.uniform(85, 99),
+            'false_positive_rate': random.uniform(1, 5),
+            'data_poisoning_attempts': random.randint(0, 10),
+            'model_accuracy': random.uniform(92, 98)
+        }
+        
+        self.metrics_history.append(metrics)
+        # Keep only last 100 records
+        if len(self.metrics_history) > 100:
+            self.metrics_history.pop(0)
+            
+        return metrics
+    
+    def detect_enterprise_anomalies(self, metrics):
+        """Detect anomalies in enterprise metrics"""
+        anomalies = []
+        
+        if metrics['cpu_utilization'] > 85:
+            anomalies.append(f"High CPU utilization: {metrics['cpu_utilization']:.1f}%")
+        
+        if metrics['memory_usage'] > 80:
+            anomalies.append(f"High memory usage: {metrics['memory_usage']:.1f}%")
+        
+        if metrics['threat_detection_rate'] < 90:
+            anomalies.append(f"Low threat detection rate: {metrics['threat_detection_rate']:.1f}%")
+        
+        if metrics['data_poisoning_attempts'] > 5:
+            anomalies.append(f"Elevated poisoning attempts: {metrics['data_poisoning_attempts']}")
+            
+        return anomalies
+
+# --- CORE DATA POISONING CLASSES (Enterprise Edition) ---
+
+class EnterprisePoisoningDetector:
+    """Enterprise-grade data poisoning detection"""
     
     def __init__(self):
         self.detectors = {
@@ -304,1320 +397,749 @@ class DataPoisoningDetector:
             'dbscan': DBSCAN(eps=0.5, min_samples=5)
         }
         self.scaler = StandardScaler()
+        self.detection_log = []
+    
+    def enterprise_detection_suite(self, data):
+        """Comprehensive enterprise detection suite"""
+        results = {
+            'timestamp': datetime.now(),
+            'samples_analyzed': len(data),
+            'detection_methods': [],
+            'anomalies_detected': 0,
+            'confidence_score': 0.0,
+            'threat_level': 'LOW'
+        }
+        
+        try:
+            # Multiple detection methods
+            methods = [
+                ('ISOLATION_FOREST', self.detect_anomalies_isolation_forest(data)),
+                ('ONE_CLASS_SVM', self.detect_anomalies_svm(data)),
+                ('STATISTICAL_ANALYSIS', self.statistical_analysis(data))
+            ]
+            
+            all_anomalies = set()
+            for method_name, anomalies in methods:
+                if len(anomalies) > 0:
+                    results['detection_methods'].append(method_name)
+                    all_anomalies.update(anomalies)
+            
+            results['anomalies_detected'] = len(all_anomalies)
+            results['confidence_score'] = min(0.99, len(all_anomalies) / len(data) * 10)
+            
+            # Determine threat level
+            anomaly_ratio = len(all_anomalies) / len(data)
+            if anomaly_ratio > 0.1:
+                results['threat_level'] = 'CRITICAL'
+            elif anomaly_ratio > 0.05:
+                results['threat_level'] = 'HIGH'
+            elif anomaly_ratio > 0.02:
+                results['threat_level'] = 'MEDIUM'
+            else:
+                results['threat_level'] = 'LOW'
+                
+            # Log detection
+            self.detection_log.append(results)
+            
+        except Exception as e:
+            results['error'] = str(e)
+            results['threat_level'] = 'UNKNOWN'
+            
+        return results
     
     def detect_anomalies_isolation_forest(self, data):
-        """Detect anomalies using Isolation Forest"""
-        scaled_data = self.scaler.fit_transform(data)
-        predictions = self.detectors['isolation_forest'].fit_predict(scaled_data)
-        anomaly_indices = np.where(predictions == -1)[0]
-        return anomaly_indices
-    
-    def detect_anomalies_svm(self, data):
-        """Detect anomalies using One-Class SVM"""
-        scaled_data = self.scaler.fit_transform(data)
-        predictions = self.detectors['one_class_svm'].fit_predict(scaled_data)
-        anomaly_indices = np.where(predictions == -1)[0]
-        return anomaly_indices
-    
-    def detect_cluster_anomalies(self, data):
-        """Detect anomalies using DBSCAN clustering"""
-        scaled_data = self.scaler.fit_transform(data)
-        predictions = self.detectors['dbscan'].fit_predict(scaled_data)
-        anomaly_indices = np.where(predictions == -1)[0]
-        return anomaly_indices
-    
-    def statistical_analysis(self, data):
-        """Perform statistical analysis to detect poisoning"""
-        results = {}
-        
-        # Z-score analysis
-        z_scores = np.abs((data - data.mean(axis=0)) / data.std(axis=0))
-        high_z_score_indices = np.where(z_scores > 3)[0]
-        results['z_score_anomalies'] = high_z_score_indices
-        
-        # Mahalanobis distance
-        try:
-            cov_matrix = np.cov(data.T)
-            inv_cov_matrix = np.linalg.pinv(cov_matrix)
-            mean_diff = data - data.mean(axis=0)
-            mahalanobis_dist = np.sqrt(np.einsum('ij,ij->i', mean_diff @ inv_cov_matrix, mean_diff))
-            high_mahalanobis_indices = np.where(mahalanobis_dist > np.percentile(mahalanobis_dist, 95))[0]
-            results['mahalanobis_anomalies'] = high_mahalanobis_indices
-        except:
-            results['mahalanobis_anomalies'] = np.array([])
-        
-        return results
-
-class DefenseMechanisms:
-    """Implement defense mechanisms against data poisoning"""
-    
-    def data_sanitization(self, data, labels, anomaly_indices):
-        """Remove detected poisoned samples"""
-        clean_data = np.delete(data, anomaly_indices, axis=0)
-        clean_labels = np.delete(labels, anomaly_indices, axis=0)
-        return clean_data, clean_labels
-    
-    def robust_training(self, data, labels, method='trimmed_loss'):
-        """Implement robust training techniques"""
-        if method == 'trimmed_loss':
-            return self._trimmed_loss_training(data, labels)
-        elif method == 'differential_privacy':
-            return self._differential_privacy_training(data, labels)
-        else:
-            return data, labels
-    
-    def _trimmed_loss_training(self, data, labels):
-        """Trimmed loss for robust learning"""
-        # Simulate trimmed loss by removing samples with highest loss
-        # In practice, this would be integrated into the training process
-        return data, labels
-    
-    def _differential_privacy_training(self, data, labels):
-        """Add differential privacy noise"""
-        noise_scale = 0.1
-        noisy_data = data + np.random.normal(0, noise_scale, data.shape)
-        return noisy_data, labels
-    
-    def federated_learning_defense(self, client_data_list, aggregation_method='median'):
-        """Defend against poisoning in federated learning"""
-        if aggregation_method == 'median':
-            return np.median(client_data_list, axis=0)
-        elif aggregation_method == 'trimmed_mean':
-            # Remove outliers before averaging
-            sorted_data = np.sort(client_data_list, axis=0)
-            trimmed_data = sorted_data[1:-1]  # Remove min and max
-            return np.mean(trimmed_data, axis=0)
-        else:
-            return np.mean(client_data_list, axis=0)
-
-class MLModelSecurity:
-    """Machine learning model security analysis"""
-    
-    def __init__(self):
-        self.model_metrics = {}
-    
-    def model_robustness_test(self, clean_model, poisoned_model, test_data, test_labels):
-        """Test model robustness against poisoning"""
-        clean_accuracy = self._evaluate_model(clean_model, test_data, test_labels)
-        poisoned_accuracy = self._evaluate_model(poisoned_model, test_data, test_labels)
-        
-        robustness_score = (poisoned_accuracy / clean_accuracy) * 100
-        return {
-            'clean_accuracy': clean_accuracy,
-            'poisoned_accuracy': poisoned_accuracy,
-            'robustness_score': robustness_score,
-            'performance_drop': clean_accuracy - poisoned_accuracy
-        }
-    
-    def _evaluate_model(self, model, test_data, test_labels):
-        """Evaluate model accuracy (simulated)"""
-        # Simulate model evaluation
-        return random.uniform(0.7, 0.95)
-    
-    def extract_training_data_analysis(self, model, original_data_shape):
-        """Analyze potential for training data extraction"""
-        # Simulate model inversion attack analysis
-        vulnerability_score = random.uniform(0.1, 0.9)
-        return {
-            'vulnerability_score': vulnerability_score,
-            'risk_level': 'HIGH' if vulnerability_score > 0.7 else 'MEDIUM' if vulnerability_score > 0.4 else 'LOW',
-            'recommendations': [
-                'Use differential privacy',
-                'Implement secure aggregation',
-                'Monitor model outputs'
-            ]
-        }
-
-class RealTimeDataMonitor:
-    """Real-time data stream monitoring for poisoning detection"""
-    
-    def __init__(self):
-        self.data_stream = []
-        self.anomaly_history = []
-    
-    def monitor_data_stream(self, new_data_point, window_size=100):
-        """Monitor streaming data for poisoning patterns"""
-        self.data_stream.append(new_data_point)
-        
-        if len(self.data_stream) > window_size:
-            self.data_stream.pop(0)
-        
-        # Analyze recent data for anomalies
-        if len(self.data_stream) >= 10:
-            recent_data = np.array(self.data_stream[-10:])
-            detector = DataPoisoningDetector()
-            anomalies = detector.detect_anomalies_isolation_forest(recent_data)
-            
-            current_anomalies = len(anomalies) > 0
-            self.anomaly_history.append(current_anomalies)
-            
-            return {
-                'anomaly_detected': current_anomalies,
-                'anomaly_count': len(anomalies),
-                'stream_size': len(self.data_stream),
-                'anomaly_rate': sum(self.anomaly_history[-50:]) / min(50, len(self.anomaly_history))
-            }
-        
-        return {'anomaly_detected': False, 'anomaly_count': 0, 'stream_size': len(self.data_stream), 'anomaly_rate': 0.0}
-
-# --- ENHANCED DATA SOURCES INTEGRATION ---
-
-class AdvancedDataFetcher:
-    """Enhanced data fetcher with more sources and capabilities"""
-    
-    def __init__(self):
-        self.data_cache = {}
-        self.request_headers = {
-            'User-Agent': 'DataPoisoningDefensePlatform/1.0',
-            'Accept': 'application/json'
-        }
-    
-    def fetch_udise_data(self):
-        """Fetch Unified District Information System for Education data (simulated)"""
-        try:
-            # Simulate UDISE+ education data
-            states = ['Maharashtra', 'Tamil Nadu', 'Karnataka', 'Delhi', 'Kerala', 'Gujarat']
-            data = {
-                'State': states,
-                'Total_Schools': np.random.randint(50000, 200000, len(states)),
-                'Enrollment': np.random.randint(1000000, 5000000, len(states)),
-                'Teacher_Count': np.random.randint(50000, 200000, len(states)),
-                'Girls_Enrollment_Ratio': np.random.uniform(0.45, 0.55, len(states)),
-                'Digital_Classrooms': np.random.randint(1000, 50000, len(states))
-            }
-            return pd.DataFrame(data)
-        except Exception as e:
-            st.error(f"Error fetching UDISE data: {e}")
-            return None
-    
-    def fetch_health_data(self):
-        """Fetch health and nutrition data (simulated)"""
-        try:
-            indicators = ['Malnutrition_Rate', 'Immunization_Coverage', 'Institutional_Deliveries', 
-                         'Doctor_Population_Ratio', 'Hospital_Beds_Per_1000']
-            states = ['Bihar', 'UP', 'MP', 'Rajasthan', 'West Bengal', 'Assam']
-            
-            data = []
-            for state in states:
-                for indicator in indicators:
-                    data.append({
-                        'State': state,
-                        'Indicator': indicator,
-                        'Value': np.random.uniform(10, 95),
-                        'Year': 2023
-                    })
-            
-            return pd.DataFrame(data)
-        except Exception as e:
-            st.error(f"Error fetching health data: {e}")
-            return None
-    
-    def fetch_agriculture_data(self):
-        """Fetch agricultural production data (simulated)"""
-        try:
-            crops = ['Rice', 'Wheat', 'Sugarcane', 'Cotton', 'Pulses']
-            states = ['Punjab', 'Haryana', 'UP', 'MP', 'Andhra Pradesh']
-            
-            data = []
-            for crop in crops:
-                for state in states:
-                    data.append({
-                        'Crop': crop,
-                        'State': state,
-                        'Production_Tonnes': np.random.randint(100000, 5000000),
-                        'Area_Hectares': np.random.randint(50000, 2000000),
-                        'Yield_Kg_Hectare': np.random.randint(1000, 5000)
-                    })
-            
-            return pd.DataFrame(data)
-        except Exception as e:
-            st.error(f"Error fetching agriculture data: {e}")
-            return None
-    
-    def fetch_social_welfare_data(self):
-        """Fetch social welfare scheme data (simulated)"""
-        try:
-            schemes = ['PM-KISAN', 'MNREGA', 'PM-JAY', 'NSAP', 'ICDS']
-            data = {
-                'Scheme': schemes,
-                'Beneficiaries_Millions': np.random.randint(50, 500, len(schemes)),
-                'Budget_Crores': np.random.randint(1000, 50000, len(schemes)),
-                'Women_Beneficiaries_Percent': np.random.uniform(40, 60, len(schemes)),
-                'Rural_Coverage_Percent': np.random.uniform(70, 95, len(schemes))
-            }
-            return pd.DataFrame(data)
-        except Exception as e:
-            st.error(f"Error fetching social welfare data: {e}")
-            return None
-
-# --- ADVANCED DATA POISONING DETECTION ---
-
-class AdvancedPoisoningDetector:
-    """Advanced poisoning detection with ensemble methods"""
-    
-    def __init__(self):
-        self.detectors = {
-            'isolation_forest': IsolationForest(contamination=0.1, random_state=42),
-            'local_outlier_factor': None,  # Could be added
-            'autoencoder': None  # Could be added for deep learning approach
-        }
-        self.scaler = StandardScaler()
-        self.detection_history = []
-    
-    def ensemble_detection(self, data):
-        """Use multiple detectors for consensus-based detection"""
+        """Isolation Forest detection"""
         try:
             scaled_data = self.scaler.fit_transform(data)
-            
-            # Get predictions from available detectors
-            predictions = []
-            
-            # Isolation Forest
-            iforest_pred = self.detectors['isolation_forest'].fit_predict(scaled_data)
-            predictions.append((iforest_pred == -1).astype(int))
-            
-            # Statistical methods
+            predictions = self.detectors['isolation_forest'].fit_predict(scaled_data)
+            return np.where(predictions == -1)[0]
+        except:
+            return np.array([])
+    
+    def detect_anomalies_svm(self, data):
+        """One-Class SVM detection"""
+        try:
+            scaled_data = self.scaler.fit_transform(data)
+            predictions = self.detectors['one_class_svm'].fit_predict(scaled_data)
+            return np.where(predictions == -1)[0]
+        except:
+            return np.array([])
+    
+    def statistical_analysis(self, data):
+        """Statistical anomaly detection"""
+        try:
             z_scores = np.abs((data - data.mean(axis=0)) / data.std(axis=0))
-            z_anomalies = (z_scores > 3).any(axis=1).astype(int)
-            predictions.append(z_anomalies)
-            
-            # Combine predictions (majority voting)
-            ensemble_pred = np.mean(predictions, axis=0) > 0.5
-            anomaly_indices = np.where(ensemble_pred)[0]
-            
-            # Log detection
-            self.detection_history.append({
-                'timestamp': datetime.now(),
-                'samples_analyzed': len(data),
-                'anomalies_detected': len(anomaly_indices),
-                'detection_rate': len(anomaly_indices) / len(data)
-            })
-            
-            return anomaly_indices
-            
-        except Exception as e:
-            st.error(f"Ensemble detection error: {e}")
-            return np.array([])
-    
-    def temporal_analysis(self, data, timestamps):
-        """Analyze temporal patterns for poisoning detection"""
-        try:
-            if len(data) != len(timestamps):
-                return np.array([])
-            
-            # Calculate rolling statistics
-            if data.shape[1] >= 1:
-                feature_means = np.array([np.mean(data[max(0, i-10):i+1], axis=0) 
-                                        for i in range(len(data))])
-                feature_stds = np.array([np.std(data[max(0, i-10):i+1], axis=0) 
-                                      for i in range(len(data))])
-                
-                # Detect sudden changes
-                changes = np.abs(data - feature_means) / (feature_stds + 1e-8)
-                temporal_anomalies = np.where((changes > 2).any(axis=1))[0]
-                
-                return temporal_anomalies
-            
-            return np.array([])
-            
-        except Exception as e:
-            st.error(f"Temporal analysis error: {e}")
+            return np.where(z_scores > 3)[0]
+        except:
             return np.array([])
 
-# --- DATA UPLOAD AND PROCESSING ---
+# --- ENTERPRISE UI COMPONENTS ---
 
-class DataProcessor:
-    """Handle data upload and preprocessing"""
+def render_terminal_header():
+    """Render the enterprise terminal header"""
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
     
-    def __init__(self):
-        self.supported_formats = ['csv', 'json', 'xlsx', 'parquet']
-    
-    def process_uploaded_file(self, uploaded_file):
-        """Process uploaded file and return DataFrame"""
-        try:
-            file_extension = uploaded_file.name.split('.')[-1].lower()
-            
-            if file_extension == 'csv':
-                df = pd.read_csv(uploaded_file)
-            elif file_extension == 'json':
-                df = pd.read_json(uploaded_file)
-            elif file_extension == 'xlsx':
-                df = pd.read_excel(uploaded_file)
-            elif file_extension == 'parquet':
-                df = pd.read_parquet(uploaded_file)
-            else:
-                st.error(f"Unsupported file format: {file_extension}")
-                return None
-            
-            st.success(f"✅ Successfully loaded {len(df)} records with {len(df.columns)} features")
-            return df
-            
-        except Exception as e:
-            st.error(f"Error processing file: {e}")
-            return None
-    
-    def validate_dataset(self, df):
-        """Validate dataset for common issues"""
-        issues = []
-        
-        # Check for missing values
-        missing_values = df.isnull().sum().sum()
-        if missing_values > 0:
-            issues.append(f"Found {missing_values} missing values")
-        
-        # Check for constant columns
-        constant_cols = [col for col in df.columns if df[col].nunique() == 1]
-        if constant_cols:
-            issues.append(f"Constant columns: {constant_cols}")
-        
-        # Check for duplicate rows
-        duplicates = df.duplicated().sum()
-        if duplicates > 0:
-            issues.append(f"Found {duplicates} duplicate rows")
-        
-        return issues
-    
-    def generate_synthetic_data(self, data_type='financial', n_samples=1000):
-        """Generate synthetic datasets for testing"""
-        try:
-            if data_type == 'financial':
-                dates = pd.date_range(end=datetime.now(), periods=n_samples, freq='D')
-                data = {
-                    'date': dates,
-                    'amount': np.random.exponential(100, n_samples),
-                    'transaction_type': np.random.choice(['debit', 'credit'], n_samples),
-                    'balance': np.random.normal(5000, 2000, n_samples).cumsum(),
-                    'category': np.random.choice(['food', 'shopping', 'transfer', 'salary'], n_samples)
-                }
-                return pd.DataFrame(data)
-            
-            elif data_type == 'healthcare':
-                data = {
-                    'patient_id': range(n_samples),
-                    'age': np.random.randint(18, 80, n_samples),
-                    'blood_pressure': np.random.normal(120, 20, n_samples),
-                    'cholesterol': np.random.normal(200, 40, n_samples),
-                    'glucose': np.random.normal(100, 20, n_samples),
-                    'has_disease': np.random.choice([0, 1], n_samples, p=[0.8, 0.2])
-                }
-                return pd.DataFrame(data)
-            
-            elif data_type == 'iot':
-                timestamps = pd.date_range(end=datetime.now(), periods=n_samples, freq='H')
-                data = {
-                    'timestamp': timestamps,
-                    'temperature': np.random.normal(25, 5, n_samples),
-                    'humidity': np.random.normal(50, 15, n_samples),
-                    'pressure': np.random.normal(1013, 10, n_samples),
-                    'vibration': np.random.exponential(1, n_samples)
-                }
-                return pd.DataFrame(data)
-            
-            else:
-                # Generic multivariate data
-                n_features = 10
-                X = np.random.randn(n_samples, n_features)
-                columns = [f'feature_{i}' for i in range(n_features)]
-                return pd.DataFrame(X, columns=columns)
-                
-        except Exception as e:
-            st.error(f"Error generating synthetic data: {e}")
-            return None
-
-# --- LIVE DATA FETCHER ---
-
-class LiveDataFetcher:
-    """Fetch live data from various sources for data poisoning analysis"""
-    
-    def __init__(self):
-        self.sources = {
-            'rbi': 'Reserve Bank of India',
-            'nso': 'National Statistical Office, India',
-            'india_ai': 'India AI Initiative',
-            'kaggle': 'Kaggle Datasets',
-            'yfinance': 'Financial Market Data',
-            'government': 'Government Open Data'
-        }
-    
-    def fetch_rbi_data(self, data_type='forex'):
-        """Fetch RBI data (simulated - in production, use RBI API)"""
-        try:
-            # Simulating RBI data fetch - replace with actual RBI API calls
-            if data_type == 'forex':
-                # Forex reserves data
-                dates = pd.date_range(end=datetime.now(), periods=30, freq='D')
-                data = {
-                    'Date': dates,
-                    'Foreign_Currency_Assets': np.random.uniform(500, 600, 30),
-                    'Gold_Reserves': np.random.uniform(40, 50, 30),
-                    'SDRs': np.random.uniform(1, 2, 30),
-                    'IMF_Reserve': np.random.uniform(5, 10, 30),
-                    'Total_Reserves': np.random.uniform(550, 650, 30)
-                }
-                return pd.DataFrame(data)
-            
-            elif data_type == 'interest_rates':
-                # Interest rates data
-                dates = pd.date_range(end=datetime.now(), periods=12, freq='M')
-                data = {
-                    'Date': dates,
-                    'Repo_Rate': np.random.uniform(6.0, 6.5, 12),
-                    'Reverse_Repo_Rate': np.random.uniform(3.35, 3.65, 12),
-                    'MSF_Rate': np.random.uniform(6.25, 6.75, 12),
-                    'Bank_Rate': np.random.uniform(6.25, 6.75, 12)
-                }
-                return pd.DataFrame(data)
-                
-        except Exception as e:
-            st.error(f"Error fetching RBI data: {e}")
-            return None
-    
-    def fetch_nso_data(self, dataset='gdp'):
-        """Fetch National Statistical Office data (simulated)"""
-        try:
-            if dataset == 'gdp':
-                quarters = [f'Q{i} 2023' for i in range(1, 5)] + [f'Q{i} 2024' for i in range(1, 3)]
-                data = {
-                    'Quarter': quarters,
-                    'GDP_Growth_Rate': np.random.uniform(6.0, 8.5, 6),
-                    'Agriculture_Growth': np.random.uniform(2.0, 4.5, 6),
-                    'Industry_Growth': np.random.uniform(5.0, 9.0, 6),
-                    'Services_Growth': np.random.uniform(7.0, 10.0, 6),
-                    'GVA_Growth': np.random.uniform(6.0, 8.0, 6)
-                }
-                return pd.DataFrame(data)
-            
-            elif dataset == 'inflation':
-                months = pd.date_range(end=datetime.now(), periods=12, freq='M')
-                data = {
-                    'Month': months,
-                    'CPI_Combined': np.random.uniform(4.0, 6.5, 12),
-                    'CPI_Rural': np.random.uniform(4.2, 6.8, 12),
-                    'CPI_Urban': np.random.uniform(3.8, 6.2, 12),
-                    'Food_Inflation': np.random.uniform(3.5, 7.5, 12),
-                    'Fuel_Inflation': np.random.uniform(2.5, 5.5, 12)
-                }
-                return pd.DataFrame(data)
-                
-        except Exception as e:
-            st.error(f"Error fetching NSO data: {e}")
-            return None
-
-# --- UI COMPONENTS ---
-
-def render_login():
-    """Login screen for data poisoning defense platform"""
-    st.markdown("""
-    <div class="neuro-header">
-        <h1 class="neuro-text" style="font-size: 4rem; margin: 0;">🧪 DATA POISONING DEFENSE</h1>
-        <h3 class="hologram-text" style="font-size: 1.8rem; margin: 1rem 0;">
-            Attack Simulation • Detection • Defense Mechanisms
-        </h3>
+    st.markdown(f"""
+    <div class="terminal-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; color: #00ffff;">
+            <div style="display: flex; align-items: center;">
+                <h1 style="margin: 0; font-family: 'Orbitron', sans-serif; font-size: 2rem;">
+                    🛡️ CYBER DEFENSE TERMINAL
+                </h1>
+                <span style="margin-left: 2rem; font-family: 'Share Tech Mono', monospace;">
+                    DATA POISONING SOC
+                </span>
+            </div>
+            <div style="text-align: right; font-family: 'Share Tech Mono', monospace;">
+                <div>SYSTEM STATUS: <span style="color: #00ff00;">OPERATIONAL</span></div>
+                <div>{current_time}</div>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
+
+def render_dashboard_overview():
+    """Render main enterprise dashboard"""
+    st.markdown("### 📊 ENTERPRISE SECURITY DASHBOARD")
     
-    col1, col2 = st.columns([1, 1])
+    # Initialize SOC
+    if 'soc' not in st.session_state:
+        st.session_state.soc = SecurityOperationsCenter()
+        st.session_state.data_monitor = EnterpriseDataMonitor()
+    
+    soc = st.session_state.soc
+    data_monitor = st.session_state.data_monitor
+    
+    # Generate real-time metrics
+    metrics = data_monitor.generate_enterprise_metrics()
+    system_status = soc.get_system_status()
+    
+    # Top metrics row
+    col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
-        st.markdown('<div class="login-container">', unsafe_allow_html=True)
-        with st.form("login_form"):
-            st.markdown("### 🔐 SECURITY ACCESS")
-            username = st.text_input("👤 Username:", placeholder="security_analyst")
-            password = st.text_input("🔑 Password:", type="password", placeholder="••••••••")
-            mfa_code = st.text_input("📱 MFA Code:", placeholder="123456")
-            
-            if st.form_submit_button("🚀 ACCESS DEFENSE PLATFORM", use_container_width=True):
-                if username == "analyst" and password == "poison123" and mfa_code == "123456":
-                    st.session_state.authenticated = True
-                    st.session_state.login_time = datetime.now()
-                    st.success("✅ Authentication Successful! Loading defense platform...")
-                    time.sleep(1)
-                    st.rerun()
-                else:
-                    st.error("❌ Invalid credentials. Please check username, password, and MFA code.")
-        st.markdown('</div>', unsafe_allow_html=True)
+        threat_color = "#ff0000" if system_status['threat_level'] in ['HIGH', 'CRITICAL'] else "#ffff00" if system_status['threat_level'] == 'MEDIUM' else "#00ff00"
+        st.markdown(f"""
+        <div class="terminal-metric">
+            <div>THREAT LEVEL</div>
+            <div style="color: {threat_color}; font-size: 1.5rem; font-weight: bold;">{system_status['threat_level']}</div>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("### 📊 PLATFORM CAPABILITIES")
-        
-        st.write("🎯 **Attack Simulation**")
-        st.write("• Label flipping attacks")
-        st.write("• Feature manipulation")
-        st.write("• Backdoor injection")
-        st.write("• Data replication attacks")
-        
-        st.write("🔍 **Detection Methods**")
-        st.write("• Anomaly detection algorithms")
-        st.write("• Statistical analysis")
-        st.write("• Real-time monitoring")
-        st.write("• Pattern recognition")
-        
-        st.write("🛡️ **Defense Mechanisms**")
-        st.write("• Data sanitization")
-        st.write("• Robust training")
-        st.write("• Federated learning")
-        st.write("• Model security")
-
-def render_data_poisoning_simulator():
-    """Data poisoning attack simulation interface"""
-    st.markdown("### 🧪 DATA POISONING ATTACK SIMULATOR")
+        st.markdown(f"""
+        <div class="terminal-metric">
+            <div>ACTIVE INCIDENTS</div>
+            <div style="color: #ff4444; font-size: 1.5rem; font-weight: bold;">{system_status['active_incidents']}</div>
+        </div>
+        """, unsafe_allow_html=True)
     
-    attacks = DataPoisoningAttacks()
+    with col3:
+        st.markdown(f"""
+        <div class="terminal-metric">
+            <div>AGENTS ONLINE</div>
+            <div style="color: #00ff00; font-size: 1.5rem; font-weight: bold;">{system_status['agents_online']}/3</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown(f"""
+        <div class="terminal-metric">
+            <div>DEFENSE SYSTEMS</div>
+            <div style="color: #00ffff; font-size: 1.5rem; font-weight: bold;">{system_status['defense_systems']}%</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col5:
+        st.markdown(f"""
+        <div class="terminal-metric">
+            <div>DATA THROUGHPUT</div>
+            <div style="color: #00ff00; font-size: 1.5rem; font-weight: bold;">{system_status['data_throughput']}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # System metrics and alerts
+    col_left, col_right = st.columns([2, 1])
+    
+    with col_left:
+        st.markdown("#### 📈 REAL-TIME SYSTEM METRICS")
+        
+        # Create metrics visualization
+        metrics_df = pd.DataFrame(data_monitor.metrics_history[-20:])
+        if not metrics_df.empty:
+            fig = go.Figure()
+            
+            fig.add_trace(go.Scatter(
+                x=metrics_df['timestamp'], 
+                y=metrics_df['cpu_utilization'],
+                name='CPU %',
+                line=dict(color='#00ffff')
+            ))
+            
+            fig.add_trace(go.Scatter(
+                x=metrics_df['timestamp'], 
+                y=metrics_df['memory_usage'],
+                name='Memory %',
+                line=dict(color='#00ff00')
+            ))
+            
+            fig.add_trace(go.Scatter(
+                x=metrics_df['timestamp'], 
+                y=metrics_df['threat_detection_rate'],
+                name='Detection Rate %',
+                line=dict(color='#ffff00')
+            ))
+            
+            fig.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='#00ff00', family='Share Tech Mono'),
+                margin=dict(l=0, r=0, t=30, b=0),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                height=300
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
+        
+        # Current system status
+        st.markdown("#### 🔧 SYSTEM STATUS")
+        col_status1, col_status2, col_status3 = st.columns(3)
+        
+        with col_status1:
+            cpu_color = "#ff4444" if metrics['cpu_utilization'] > 80 else "#ffff00" if metrics['cpu_utilization'] > 60 else "#00ff00"
+            st.markdown(f"""
+            <div class="data-panel">
+                <div>CPU Utilization</div>
+                <div style="color: {cpu_color}; font-size: 1.2rem;">{metrics['cpu_utilization']:.1f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col_status2:
+            memory_color = "#ff4444" if metrics['memory_usage'] > 80 else "#ffff00" if metrics['memory_usage'] > 60 else "#00ff00"
+            st.markdown(f"""
+            <div class="data-panel">
+                <div>Memory Usage</div>
+                <div style="color: {memory_color}; font-size: 1.2rem;">{metrics['memory_usage']:.1f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col_status3:
+            detection_color = "#ff4444" if metrics['threat_detection_rate'] < 90 else "#00ff00"
+            st.markdown(f"""
+            <div class="data-panel">
+                <div>Threat Detection</div>
+                <div style="color: {detection_color}; font-size: 1.2rem;">{metrics['threat_detection_rate']:.1f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    with col_right:
+        st.markdown("#### 🚨 SECURITY ALERTS")
+        
+        # Generate random incident
+        if st.button("🔄 SIMULATE INCIDENT", key="simulate_incident"):
+            incident = soc.generate_incident()
+            alert_class = f"alert-{incident['severity'].lower()}"
+            st.markdown(f"""
+            <div class="{alert_class}">
+                <strong>INCIDENT {incident['id']}</strong><br>
+                Type: {incident['type']}<br>
+                Severity: {incident['severity']}<br>
+                Source: {incident['source_ip']}<br>
+                Asset: {incident['target_asset']}<br>
+                Agent: {incident['assigned_agent']}
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Show recent incidents
+        if soc.incidents:
+            for incident in soc.incidents[-3:]:  # Show last 3 incidents
+                alert_class = f"alert-{incident['severity'].lower()}"
+                st.markdown(f"""
+                <div class="{alert_class}">
+                    <strong>{incident['id']}</strong> | {incident['type']}<br>
+                    <small>{incident['timestamp'].strftime('%H:%M:%S')} | {incident['source_ip']}</small>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown("#### 👥 AGENT STATUS")
+        for agent in soc.agents:
+            status_class = f"status-{agent['status'].lower()}"
+            st.markdown(f"""
+            <div class="log-entry">
+                <span class="{status_class}"></span>
+                {agent['id']} - {agent['location']}<br>
+                <small>Last seen: {agent['last_seen'].strftime('%H:%M:%S')}</small>
+            </div>
+            """, unsafe_allow_html=True)
+
+def render_threat_intelligence():
+    """Render threat intelligence dashboard"""
+    st.markdown("### 🎯 THREAT INTELLIGENCE CENTER")
     
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.markdown("#### 🔥 ATTACK CONFIGURATION")
+        st.markdown("#### 🌍 GLOBAL THREAT LANDSCAPE")
         
-        attack_type = st.selectbox(
-            "Select Attack Type:",
-            list(attacks.attack_types.keys()),
-            format_func=lambda x: f"{x.replace('_', ' ').title()} - {attacks.attack_types[x]}"
+        # Threat trend data
+        threats = ['Data Poisoning', 'Model Inversion', 'Backdoor Attacks', 'Evasion Attacks']
+        months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+        
+        threat_data = []
+        for threat in threats:
+            for month in months:
+                threat_data.append({
+                    'Threat Type': threat,
+                    'Month': month,
+                    'Incidents': random.randint(10, 100)
+                })
+        
+        df_threats = pd.DataFrame(threat_data)
+        fig = px.line(df_threats, x='Month', y='Incidents', color='Threat Type',
+                     title="Monthly Threat Incidents",
+                     color_discrete_sequence=['#ff4444', '#ffaa00', '#ffff00', '#00ff00'])
+        fig.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#00ff00', family='Share Tech Mono'),
+            legend=dict(bgcolor='rgba(0,0,0,0)')
         )
+        st.plotly_chart(fig, use_container_width=True)
         
-        # Generate sample data
-        if st.button("🔄 Generate Sample Dataset", key="gen_data"):
-            with st.spinner("Generating sample dataset..."):
-                # Create synthetic dataset
-                n_samples = 1000
-                n_features = 10
-                X = np.random.randn(n_samples, n_features)
-                y = np.random.randint(0, 3, n_samples)
-                
-                st.session_state.clean_data = X
-                st.session_state.clean_labels = y
-                st.success(f"✅ Generated dataset: {n_samples} samples, {n_features} features")
+        # Active campaigns
+        st.markdown("#### 🎯 ACTIVE CAMPAIGNS")
+        campaigns = [
+            {'name': 'Operation Data Venom', 'threat_level': 'CRITICAL', 'targets': 'Financial ML Models'},
+            {'name': 'Project Model Breach', 'threat_level': 'HIGH', 'targets': 'Healthcare AI'},
+            {'name': 'Campaign Label Chaos', 'threat_level': 'MEDIUM', 'targets': 'Recommendation Systems'}
+        ]
         
-        if 'clean_data' in st.session_state:
-            st.info(f"📊 Dataset loaded: {st.session_state.clean_data.shape[0]} samples, {st.session_state.clean_data.shape[1]} features")
-            
-            if st.button("🚀 Launch Poisoning Attack", key="launch_attack"):
-                with st.spinner(f"Executing {attack_type} attack..."):
-                    time.sleep(2)
-                    
-                    if attack_type == 'label_flipping':
-                        poisoned_data, poisoned_labels, attack_indices = attacks.label_flipping_attack(
-                            st.session_state.clean_data, st.session_state.clean_labels
-                        )
-                    elif attack_type == 'feature_manipulation':
-                        poisoned_data, attack_indices = attacks.feature_manipulation_attack(
-                            st.session_state.clean_data
-                        )
-                        poisoned_labels = st.session_state.clean_labels
-                    else:
-                        # Default attack
-                        poisoned_data, poisoned_labels, attack_indices = attacks.label_flipping_attack(
-                            st.session_state.clean_data, st.session_state.clean_labels
-                        )
-                    
-                    st.session_state.poisoned_data = poisoned_data
-                    st.session_state.poisoned_labels = poisoned_labels
-                    st.session_state.attack_indices = attack_indices
-                    
-                    st.error(f"🎯 Attack Successful! Poisoned {len(attack_indices)} samples")
-                    
-                    # Show attack statistics
-                    col_a, col_b, col_c = st.columns(3)
-                    with col_a:
-                        st.metric("📈 Total Samples", len(poisoned_data))
-                    with col_b:
-                        st.metric("☠️ Poisoned Samples", len(attack_indices))
-                    with col_c:
-                        poison_rate = (len(attack_indices) / len(poisoned_data)) * 100
-                        st.metric("📊 Poison Rate", f"{poison_rate:.1f}%")
+        for campaign in campaigns:
+            alert_class = f"alert-{campaign['threat_level'].lower()}"
+            st.markdown(f"""
+            <div class="{alert_class}">
+                <strong>{campaign['name']}</strong><br>
+                Threat Level: {campaign['threat_level']} | Targets: {campaign['targets']}
+            </div>
+            """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("#### 📈 ATTACK STATISTICS")
+        st.markdown("#### 📊 THREAT METRICS")
         
-        if 'attack_indices' in st.session_state:
-            st.metric("🔥 Active Attacks", "1")
-            st.metric("🎯 Success Rate", "95%")
-            st.metric("⏱️ Detection Time", "2.3s")
-            
-            st.markdown("#### 🎯 ATTACK PATTERNS")
-            st.write("• Label manipulation")
-            st.write("• Feature corruption")
-            st.write("• Backdoor triggers")
-            st.write("• Gradient poisoning")
+        metrics = [
+            ('Global Attacks', '1,247', '#ff4444'),
+            ('Blocked Attempts', '1,103', '#00ff00'),
+            ('Success Rate', '88.4%', '#00ffff'),
+            ('Response Time', '2.3s', '#ffff00'),
+            ('False Positives', '3.2%', '#ffaa00')
+        ]
         
-        st.markdown("""
-        <div class="explanation-box">
-            <div class="explanation-title">🧪 DATA POISONING EXPLAINED</div>
-            <p><strong>Data poisoning</strong> involves manipulating training data to compromise ML model performance.</p>
-            
-            <p><strong>Common Attack Vectors:</strong></p>
-            <ul>
-                <li>🔀 Label Flipping - Changing data labels</li>
-                <li>📊 Feature Manipulation - Corrupting input features</li>
-                <li>🚪 Backdoor Injection - Adding hidden triggers</li>
-                <li>📈 Data Replication - Amplifying malicious samples</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
+        for name, value, color in metrics:
+            st.markdown(f"""
+            <div class="terminal-metric">
+                <div>{name}</div>
+                <div style="color: {color}; font-size: 1.2rem; font-weight: bold;">{value}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("#### 🎯 HIGH-RISK TARGETS")
+        targets = [
+            "Financial Fraud Detection",
+            "Healthcare Diagnostics", 
+            "Autonomous Vehicles",
+            "Credit Scoring",
+            "National Security ML"
+        ]
+        
+        for target in targets:
+            st.markdown(f"""
+            <div class="log-entry">
+                🔴 {target}
+            </div>
+            """, unsafe_allow_html=True)
 
-def render_poisoning_detector():
-    """Data poisoning detection interface"""
-    st.markdown("### 🔍 DATA POISONING DETECTOR")
+def render_data_defense_operations():
+    """Render data defense operations center"""
+    st.markdown("### 🛡️ DATA DEFENSE OPERATIONS")
     
-    detector = DataPoisoningDetector()
-    
-    tab1, tab2, tab3 = st.tabs(["🎯 Anomaly Detection", "📊 Statistical Analysis", "📈 Real-time Monitoring"])
+    tab1, tab2, tab3, tab4 = st.tabs(["🚀 ATTACK SIMULATION", "🔍 DETECTION SUITE", "🛡️ DEFENSE SYSTEMS", "📊 ANALYTICS"])
     
     with tab1:
-        st.markdown("#### 🎯 ANOMALY DETECTION ALGORITHMS")
-        
-        if 'poisoned_data' in st.session_state:
-            data = st.session_state.poisoned_data
-            
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                if st.button("🌲 Isolation Forest", key="iso_forest"):
-                    with st.spinner("Running Isolation Forest..."):
-                        anomalies = detector.detect_anomalies_isolation_forest(data)
-                        st.session_state.detected_anomalies = anomalies
-                        st.success(f"✅ Detected {len(anomalies)} anomalies")
-            
-            with col2:
-                if st.button("🤖 One-Class SVM", key="one_class_svm"):
-                    with st.spinner("Running One-Class SVM..."):
-                        anomalies = detector.detect_anomalies_svm(data)
-                        st.session_state.detected_anomalies = anomalies
-                        st.success(f"✅ Detected {len(anomalies)} anomalies")
-            
-            with col3:
-                if st.button("🔍 DBSCAN Clustering", key="dbscan"):
-                    with st.spinner("Running DBSCAN..."):
-                        anomalies = detector.detect_cluster_anomalies(data)
-                        st.session_state.detected_anomalies = anomalies
-                        st.success(f"✅ Detected {len(anomalies)} anomalies")
-            
-            if 'detected_anomalies' in st.session_state:
-                st.markdown("#### 📋 DETECTION RESULTS")
-                
-                # Compare with actual attack indices
-                actual_poisoned = set(st.session_state.attack_indices)
-                detected_anomalies = set(st.session_state.detected_anomalies)
-                
-                true_positives = len(actual_poisoned.intersection(detected_anomalies))
-                false_positives = len(detected_anomalies - actual_poisoned)
-                false_negatives = len(actual_poisoned - detected_anomalies)
-                
-                col_a, col_b, col_c, col_d = st.columns(4)
-                with col_a:
-                    st.metric("🎯 True Positives", true_positives)
-                with col_b:
-                    st.metric("🚫 False Positives", false_positives)
-                with col_c:
-                    st.metric("❌ False Negatives", false_negatives)
-                with col_d:
-                    precision = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0
-                    st.metric("📊 Precision", f"{precision:.2f}")
-        
-        else:
-            st.warning("⚠️ Please generate and poison a dataset first using the Attack Simulator")
-    
-    with tab2:
-        st.markdown("#### 📊 STATISTICAL ANALYSIS")
-        
-        if 'poisoned_data' in st.session_state:
-            if st.button("📈 Run Statistical Analysis", key="stat_analysis"):
-                with st.spinner("Performing statistical analysis..."):
-                    results = detector.statistical_analysis(st.session_state.poisoned_data)
-                    
-                    st.markdown("##### Z-Score Analysis")
-                    z_anomalies = results['z_score_anomalies']
-                    st.write(f"Detected {len(z_anomalies)} samples with |Z-score| > 3")
-                    
-                    st.markdown("##### Mahalanobis Distance")
-                    m_anomalies = results['mahalanobis_anomalies']
-                    st.write(f"Detected {len(m_anomalies)} outliers using Mahalanobis distance")
-    
-    with tab3:
-        st.markdown("#### 📈 REAL-TIME DATA STREAM MONITORING")
-        
-        monitor = RealTimeDataMonitor()
-        
-        if st.button("🔴 Start Real-time Monitoring", key="start_monitor"):
-            st.info("🔄 Monitoring data stream...")
-            
-            # Simulate real-time data stream
-            for i in range(20):
-                new_point = np.random.randn(10)  # 10 features
-                result = monitor.monitor_data_stream(new_point)
-                
-                if result['anomaly_detected']:
-                    st.markdown(f'<div class="poison-alert">🚨 ANOMALY DETECTED! {result["anomaly_count"]} anomalies in stream</div>', unsafe_allow_html=True)
-                else:
-                    st.markdown(f'<div class="defense-success">✅ Stream clean - {result["stream_size"]} points monitored</div>', unsafe_allow_html=True)
-                
-                time.sleep(0.5)
-
-def render_defense_mechanisms():
-    """Defense mechanisms against data poisoning"""
-    st.markdown("### 🛡️ DEFENSE MECHANISMS")
-    
-    defense = DefenseMechanisms()
-    
-    tab1, tab2, tab3 = st.tabs(["🧹 Data Sanitization", "🎯 Robust Training", "🌐 Federated Learning"])
-    
-    with tab1:
-        st.markdown("#### 🧹 DATA SANITIZATION")
-        
-        if 'detected_anomalies' in st.session_state and 'poisoned_data' in st.session_state:
-            st.info(f"🔍 {len(st.session_state.detected_anomalies)} anomalies detected")
-            
-            if st.button("🧼 Sanitize Dataset", key="sanitize"):
-                with st.spinner("Removing poisoned samples..."):
-                    clean_data, clean_labels = defense.data_sanitization(
-                        st.session_state.poisoned_data,
-                        st.session_state.poisoned_labels,
-                        st.session_state.detected_anomalies
-                    )
-                    
-                    st.session_state.clean_data_sanitized = clean_data
-                    st.session_state.clean_labels_sanitized = clean_labels
-                    
-                    st.success(f"✅ Dataset sanitized! Removed {len(st.session_state.detected_anomalies)} samples")
-                    
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.metric("📊 Original Size", len(st.session_state.poisoned_data))
-                    with col2:
-                        st.metric("🧼 Sanitized Size", len(clean_data))
-        
-        else:
-            st.warning("⚠️ Please run anomaly detection first")
-    
-    with tab2:
-        st.markdown("#### 🎯 ROBUST TRAINING TECHNIQUES")
-        
-        robust_method = st.selectbox(
-            "Select Robust Training Method:",
-            ['trimmed_loss', 'differential_privacy'],
-            format_func=lambda x: x.replace('_', ' ').title()
-        )
-        
-        if st.button("🛡️ Apply Robust Training", key="robust_train"):
-            with st.spinner("Applying robust training techniques..."):
-                if 'clean_data' in st.session_state:
-                    robust_data, robust_labels = defense.robust_training(
-                        st.session_state.clean_data,
-                        st.session_state.clean_labels,
-                        robust_method
-                    )
-                    
-                    st.session_state.robust_data = robust_data
-                    st.session_state.robust_labels = robust_labels
-                    
-                    st.success(f"✅ Applied {robust_method} robust training")
-    
-    with tab3:
-        st.markdown("#### 🌐 FEDERATED LEARNING DEFENSE")
-        
-        st.info("Simulating federated learning with multiple clients")
-        
-        if st.button("🛡️ Test Federated Defense", key="federated_defense"):
-            with st.spinner("Simulating federated learning scenario..."):
-                # Simulate multiple clients with potentially poisoned data
-                n_clients = 5
-                client_data = []
-                
-                for i in range(n_clients):
-                    # One client is malicious (poisoned data)
-                    if i == 0:  # Malicious client
-                        client_data.append(np.random.randn(10) + 2)  # Poisoned data
-                    else:  # Honest clients
-                        client_data.append(np.random.randn(10))
-                
-                # Test different aggregation methods
-                methods = ['mean', 'median', 'trimmed_mean']
-                results = {}
-                
-                for method in methods:
-                    aggregated = defense.federated_learning_defense(client_data, method)
-                    results[method] = np.linalg.norm(aggregated - np.mean(client_data[1:], axis=0))  # Distance from honest mean
-                
-                # Display results
-                st.markdown("##### Aggregation Method Effectiveness")
-                for method, distance in results.items():
-                    st.write(f"**{method.title()}:** Distance from honest mean = {distance:.4f}")
-
-def render_advanced_detection():
-    """Advanced poisoning detection interface"""
-    st.markdown("### 🔬 ADVANCED POISONING DETECTION")
-    
-    advanced_detector = AdvancedPoisoningDetector()
-    
-    tab1, tab2 = st.tabs(["🎯 Ensemble Detection", "⏰ Temporal Analysis"])
-    
-    with tab1:
-        st.markdown("#### 🎯 ENSEMBLE DETECTION")
-        
-        if 'poisoned_data' in st.session_state:
-            data = st.session_state.poisoned_data
-            
-            if st.button("🚀 Run Ensemble Detection", key="ensemble_detect"):
-                with st.spinner("Running ensemble detection with multiple algorithms..."):
-                    anomalies = advanced_detector.ensemble_detection(data)
-                    st.session_state.ensemble_anomalies = anomalies
-                    
-                    st.success(f"✅ Ensemble detection complete! Found {len(anomalies)} anomalies")
-                    
-                    # Compare with known attacks
-                    if 'attack_indices' in st.session_state:
-                        actual_attacks = set(st.session_state.attack_indices)
-                        detected = set(anomalies)
-                        
-                        tp = len(actual_attacks.intersection(detected))
-                        fp = len(detected - actual_attacks)
-                        fn = len(actual_attacks - detected)
-                        
-                        st.metric("🎯 True Positives", tp)
-                        st.metric("🚫 False Positives", fp)
-                        st.metric("❌ False Negatives", fn)
-    
-    with tab2:
-        st.markdown("#### ⏰ TEMPORAL ANALYSIS")
-        
-        if 'poisoned_data' in st.session_state:
-            # Generate timestamps for temporal analysis
-            timestamps = pd.date_range(end=datetime.now(), periods=len(st.session_state.poisoned_data), freq='H')
-            
-            if st.button("🔍 Analyze Temporal Patterns", key="temporal_analysis"):
-                with st.spinner("Analyzing temporal patterns for poisoning detection..."):
-                    temporal_anomalies = advanced_detector.temporal_analysis(
-                        st.session_state.poisoned_data, timestamps
-                    )
-                    
-                    st.session_state.temporal_anomalies = temporal_anomalies
-                    st.success(f"✅ Found {len(temporal_anomalies)} temporal anomalies")
-
-def render_data_upload_center():
-    """Data upload and processing center"""
-    st.markdown("### 📁 DATA UPLOAD & PROCESSING CENTER")
-    
-    data_processor = DataProcessor()
-    
-    tab1, tab2, tab3 = st.tabs(["📤 Upload Data", "🛠️ Data Validation", "🧪 Synthetic Data"])
-    
-    with tab1:
-        st.markdown("#### 📤 UPLOAD YOUR DATASET")
-        
-        st.markdown('<div class="upload-box">', unsafe_allow_html=True)
-        st.markdown("### 🗂️ DRAG & DROP YOUR DATA FILES")
-        st.write("Supported formats: CSV, JSON, Excel, Parquet")
-        
-        uploaded_file = st.file_uploader(
-            "Choose a file",
-            type=data_processor.supported_formats,
-            label_visibility="collapsed",
-            key="file_uploader"
-        )
-        
-        if uploaded_file is not None:
-            st.info(f"📄 File uploaded: {uploaded_file.name} ({uploaded_file.size / 1024:.1f} KB)")
-            
-            if st.button("🚀 Process Uploaded File", key="process_upload"):
-                with st.spinner("Processing uploaded file..."):
-                    df = data_processor.process_uploaded_file(uploaded_file)
-                    
-                    if df is not None:
-                        st.session_state.uploaded_data = df
-                        st.session_state.uploaded_file_name = uploaded_file.name
-                        
-                        # Store as numpy arrays for compatibility with existing code
-                        st.session_state.clean_data = df.select_dtypes(include=[np.number]).values
-                        if len(st.session_state.clean_data) > 0:
-                            st.session_state.clean_labels = np.random.randint(0, 3, len(st.session_state.clean_data))
-                        
-                        st.success("✅ Dataset ready for poisoning analysis!")
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    with tab2:
-        st.markdown("#### 🛠️ DATA VALIDATION")
-        
-        if 'uploaded_data' in st.session_state:
-            df = st.session_state.uploaded_data
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.metric("📊 Total Rows", len(df))
-                st.metric("🎯 Features", len(df.columns))
-            
-            with col2:
-                # Data types
-                st.write("**Data Types:**")
-                dtype_counts = df.dtypes.value_counts()
-                for dtype, count in dtype_counts.items():
-                    st.write(f"• {dtype}: {count} columns")
-            
-            # Run validation
-            if st.button("🔍 Run Data Validation", key="run_validation"):
-                issues = data_processor.validate_dataset(df)
-                
-                if issues:
-                    st.markdown('<div class="warning-box">', unsafe_allow_html=True)
-                    st.warning("⚠️ Data Quality Issues Found:")
-                    for issue in issues:
-                        st.write(f"• {issue}")
-                    st.markdown('</div>', unsafe_allow_html=True)
-                else:
-                    st.markdown('<div class="success-box">', unsafe_allow_html=True)
-                    st.success("✅ No data quality issues found!")
-                    st.markdown('</div>', unsafe_allow_html=True)
-        else:
-            st.info("📝 Please upload a dataset first to run validation")
-    
-    with tab3:
-        st.markdown("#### 🧪 SYNTHETIC DATA GENERATOR")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            data_type = st.selectbox(
-                "Data Type:",
-                ['financial', 'healthcare', 'iot', 'generic'],
-                key='synth_data_type'
-            )
-            
-            n_samples = st.slider(
-                "Number of Samples:",
-                min_value=100,
-                max_value=10000,
-                value=1000,
-                step=100,
-                key='n_samples'
-            )
-        
-        with col2:
-            if st.button("🎲 Generate Synthetic Data", key="generate_synthetic"):
-                with st.spinner(f"Generating {data_type} dataset with {n_samples} samples..."):
-                    synthetic_df = data_processor.generate_synthetic_data(data_type, n_samples)
-                    
-                    if synthetic_df is not None:
-                        st.session_state.synthetic_data = synthetic_df
-                        st.session_state.clean_data = synthetic_df.select_dtypes(include=[np.number]).values
-                        if len(st.session_state.clean_data) > 0:
-                            st.session_state.clean_labels = np.random.randint(0, 3, len(st.session_state.clean_data))
-                        
-                        st.success(f"✅ Generated {data_type} dataset with {n_samples} samples")
-                        
-                        # Show preview
-                        st.dataframe(synthetic_df.head(), use_container_width=True)
-
-def render_indian_data_sources():
-    """Enhanced Indian data sources interface"""
-    st.markdown("### 🇮🇳 INDIAN DATA SOURCES HUB")
-    
-    advanced_fetcher = AdvancedDataFetcher()
-    
-    tab1, tab2, tab3, tab4 = st.tabs(["🏫 Education Data", "🏥 Health & Nutrition", "🌾 Agriculture", "🤝 Social Welfare"])
-    
-    with tab1:
-        st.markdown("#### 🏫 EDUCATION DATA (UDISE+)")
-        
-        if st.button("📊 Fetch Education Data", key="fetch_education"):
-            with st.spinner("Fetching Unified District Information System for Education data..."):
-                education_data = advanced_fetcher.fetch_udise_data()
-                
-                if education_data is not None:
-                    st.session_state.education_data = education_data
-                    st.success(f"✅ Fetched education data for {len(education_data)} states")
-                    
-                    st.dataframe(education_data, use_container_width=True)
-                    
-                    # Create visualizations
-                    col1, col2 = st.columns(2)
-                    
-                    with col1:
-                        fig1 = px.bar(education_data, x='State', y='Total_Schools', 
-                                     title='Total Schools by State')
-                        st.plotly_chart(fig1, use_container_width=True)
-    
-    with tab2:
-        st.markdown("#### 🏥 HEALTH & NUTRITION DATA")
-        
-        if st.button("📈 Fetch Health Data", key="fetch_health"):
-            with st.spinner("Fetching health and nutrition indicators..."):
-                health_data = advanced_fetcher.fetch_health_data()
-                
-                if health_data is not None:
-                    st.session_state.health_data = health_data
-                    st.success(f"✅ Fetched {len(health_data)} health indicators")
-    
-    with tab3:
-        st.markdown("#### 🌾 AGRICULTURE PRODUCTION DATA")
-        
-        if st.button("🌱 Fetch Agriculture Data", key="fetch_agriculture"):
-            with st.spinner("Fetching agricultural production data..."):
-                agri_data = advanced_fetcher.fetch_agriculture_data()
-                
-                if agri_data is not None:
-                    st.session_state.agri_data = agri_data
-                    st.success(f"✅ Fetched {len(agri_data)} crop production records")
-    
-    with tab4:
-        st.markdown("#### 🤝 SOCIAL WELFARE SCHEMES")
-        
-        if st.button("📋 Fetch Social Welfare Data", key="fetch_welfare"):
-            with st.spinner("Fetching social welfare scheme data..."):
-                welfare_data = advanced_fetcher.fetch_social_welfare_data()
-                
-                if welfare_data is not None:
-                    st.session_state.welfare_data = welfare_data
-                    st.success(f"✅ Fetched data for {len(welfare_data)} welfare schemes")
-
-def render_live_data_integration():
-    """Live data integration from various sources"""
-    st.markdown("### 🌐 LIVE DATA INTEGRATION")
-    
-    data_fetcher = LiveDataFetcher()
-    
-    tab1, tab2 = st.tabs(["🏦 RBI Data", "📊 NSO Statistics"])
-    
-    with tab1:
-        st.markdown("#### 🏦 RESERVE BANK OF INDIA DATA")
+        st.markdown("#### 🚀 ADVERSARIAL ATTACK SIMULATION")
         
         col1, col2 = st.columns([2, 1])
         
         with col1:
-            rbi_data_type = st.selectbox(
-                "Select RBI Dataset:",
-                ['forex', 'interest_rates'],
-                format_func=lambda x: 'Foreign Exchange Reserves' if x == 'forex' else 'Interest Rates',
-                key="rbi_data_type"
+            attack_type = st.selectbox(
+                "ATTACK TYPE:",
+                ['LABEL_FLIPPING', 'FEATURE_MANIPULATION', 'BACKDOOR_INJECTION', 'DATA_REPLICATION'],
+                key='attack_type'
             )
             
-            if st.button("🔄 Fetch RBI Data", key="fetch_rbi"):
-                with st.spinner("Fetching latest RBI data..."):
-                    rbi_data = data_fetcher.fetch_rbi_data(rbi_data_type)
+            if st.button("🚀 DEPLOY ATTACK SIMULATION", key="deploy_attack"):
+                with st.spinner("Initializing attack simulation..."):
+                    time.sleep(2)
                     
-                    if rbi_data is not None:
-                        st.session_state.rbi_data = rbi_data
-                        st.success(f"✅ Fetched {len(rbi_data)} records from RBI")
-                        
-                        # Display data
-                        st.dataframe(rbi_data, use_container_width=True)
-                        
-                        # Create visualization
-                        if rbi_data_type == 'forex':
-                            fig = px.line(rbi_data, x='Date', y='Total_Reserves', 
-                                         title='India Total Forex Reserves (Simulated)')
-                            st.plotly_chart(fig, use_container_width=True)
-                        else:
-                            fig = px.line(rbi_data, x='Date', y='Repo_Rate', 
-                                         title='RBI Repo Rate (Simulated)')
-                            st.plotly_chart(fig, use_container_width=True)
+                    # Simulate attack results
+                    success_rate = random.uniform(75, 95)
+                    detected = random.choice([True, False])
+                    
+                    if detected:
+                        st.markdown("""
+                        <div class="alert-medium">
+                            🛡️ ATTACK DETECTED BY DEFENSE SYSTEMS<br>
+                            <strong>Attack Type:</strong> {attack_type}<br>
+                            <strong>Success Rate:</strong> {success_rate:.1f}%<br>
+                            <strong>Status:</strong> NEUTRALIZED
+                        </div>
+                        """.format(attack_type=attack_type, success_rate=success_rate), unsafe_allow_html=True)
+                    else:
+                        st.markdown("""
+                        <div class="alert-critical">
+                            🚨 ATTACK SUCCESSFUL<br>
+                            <strong>Attack Type:</strong> {attack_type}<br>
+                            <strong>Success Rate:</strong> {success_rate:.1f}%<br>
+                            <strong>Status:</strong> REQUIRES IMMEDIATE ATTENTION
+                        </div>
+                        """.format(attack_type=attack_type, success_rate=success_rate), unsafe_allow_html=True)
         
         with col2:
-            st.markdown("##### 📊 RBI DATA SOURCES")
-            st.markdown('<div class="data-source-card">', unsafe_allow_html=True)
-            st.markdown('<span class="live-data-badge">LIVE</span>', unsafe_allow_html=True)
-            st.write("**Foreign Exchange Reserves**")
-            st.write("• Total reserves")
-            st.write("• Currency composition")
-            st.write("• Monthly changes")
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown("#### ⚙️ ATTACK PARAMETERS")
+            st.markdown("""
+            <div class="data-panel">
+                <strong>LABEL_FLIPPING</strong><br>
+                • Target: Training labels<br>
+                • Method: Random flipping<br>
+                • Impact: Model accuracy degradation
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("""
+            <div class="data-panel">
+                <strong>FEATURE_MANIPULATION</strong><br>
+                • Target: Input features<br>
+                • Method: Noise injection<br>
+                • Impact: Feature corruption
+            </div>
+            """, unsafe_allow_html=True)
     
     with tab2:
-        st.markdown("#### 📊 NATIONAL STATISTICAL OFFICE DATA")
+        st.markdown("#### 🔍 ENTERPRISE DETECTION SUITE")
         
-        nso_dataset = st.selectbox(
-            "Select NSO Dataset:",
-            ['gdp', 'inflation'],
-            format_func=lambda x: 'GDP Growth Data' if x == 'gdp' else 'Inflation Data'
-        )
+        if 'enterprise_detector' not in st.session_state:
+            st.session_state.enterprise_detector = EnterprisePoisoningDetector()
         
-        if st.button("🔄 Fetch NSO Data", key="fetch_nso"):
-            with st.spinner("Fetching latest NSO statistics..."):
-                nso_data = data_fetcher.fetch_nso_data(nso_dataset)
+        detector = st.session_state.enterprise_detector
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            if st.button("🔄 RUN DETECTION SWEEP", key="run_detection"):
+                # Generate sample data for detection
+                sample_data = np.random.randn(1000, 10)
                 
-                if nso_data is not None:
-                    st.session_state.nso_data = nso_data
-                    st.success(f"✅ Fetched {len(nso_data)} records from NSO")
+                with st.spinner("Running comprehensive detection analysis..."):
+                    time.sleep(3)
+                    results = detector.enterprise_detection_suite(sample_data)
                     
-                    st.dataframe(nso_data, use_container_width=True)
+                    # Display results
+                    threat_color = "#ff0000" if results['threat_level'] in ['HIGH', 'CRITICAL'] else "#ffff00" if results['threat_level'] == 'MEDIUM' else "#00ff00"
                     
-                    if nso_dataset == 'gdp':
-                        fig = px.bar(nso_data, x='Quarter', y='GDP_Growth_Rate',
-                                    title='India GDP Growth Rate (Simulated)')
-                        st.plotly_chart(fig, use_container_width=True)
-                    else:
-                        fig = px.line(nso_data, x='Month', y='CPI_Combined',
-                                    title='Consumer Price Index - Combined (Simulated)')
-                        st.plotly_chart(fig, use_container_width=True)
-
-def render_system_monitor():
-    """System monitoring for data poisoning defense"""
-    st.markdown("### 💻 SYSTEM MONITORING")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("⚡ CPU Usage", f"{psutil.cpu_percent()}%")
-        st.progress(psutil.cpu_percent() / 100)
-    
-    with col2:
-        memory = psutil.virtual_memory()
-        st.metric("💾 Memory Usage", f"{memory.percent}%")
-        st.progress(memory.percent / 100)
-    
-    with col3:
-        disk = psutil.disk_usage('/')
-        st.metric("💽 Disk Usage", f"{disk.percent}%")
-        st.progress(disk.percent / 100)
-    
-    with col4:
-        st.metric("🖥️ Running Processes", len(psutil.pids()))
-    
-    # Real-time monitoring
-    st.markdown("#### 📈 REAL-TIME DEFENSE METRICS")
-    
-    if st.button("🔄 Refresh Metrics", key="refresh_metrics"):
-        st.rerun()
-    
-    # Simulate real-time data
-    time_points = list(range(1, 11))
-    attack_attempts = [random.randint(5, 20) for _ in time_points]
-    blocked_attacks = [max(0, a - random.randint(0, 5)) for a in attack_attempts]
-    
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=time_points, y=attack_attempts, name='🎯 Attack Attempts', line=dict(color='#ff4444')))
-    fig.add_trace(go.Scatter(x=time_points, y=blocked_attacks, name='🛡️ Blocked Attacks', line=dict(color='#00ff00')))
-    fig.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)', 
-        plot_bgcolor='rgba(0,0,0,0)', 
-        font=dict(color='white'),
-        title="Real-time Attack Defense Monitoring"
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-# --- MAIN DASHBOARD ---
-
-def render_main_dashboard():
-    """Main data poisoning defense dashboard"""
-    
-    current_time = datetime.now()
-    if 'login_time' in st.session_state:
-        session_duration = current_time - st.session_state.login_time
-        session_str = str(session_duration).split('.')[0]
-    else:
-        session_str = "0:00:00"
-    
-    st.markdown(f"""
-    <div class="neuro-header">
-        <h1 class="neuro-text" style="font-size: 4rem; margin: 0;">🧪 DATA POISONING DEFENSE</h1>
-        <h3 class="hologram-text" style="font-size: 1.8rem; margin: 1rem 0;">
-            Advanced ML Security • Real-time Protection • Threat Intelligence
-        </h3>
-        <p style="color: #00ffff; font-family: 'Exo 2'; font-size: 1.2rem;">
-            🕒 Time: <strong>{current_time.strftime("%Y-%m-%d %H:%M:%S")}</strong> | 
-            🔓 Session: <strong>{session_str}</strong> |
-            🛡️ Status: <strong style="color: #00ff00;">OPERATIONAL</strong>
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Installation instructions in sidebar
-    with st.sidebar:
-        st.markdown("### 📦 Installation Guide")
-        st.markdown("""
-        **For enhanced features:**
-        ```bash
-        pip install yfinance
-        ```
+                    st.markdown(f"""
+                    <div class="data-panel">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>DETECTION RESULTS</div>
+                            <div style="color: {threat_color};">{results['threat_level']}</div>
+                        </div>
+                        <hr style="border-color: #00ffff;">
+                        <div>Samples Analyzed: {results['samples_analyzed']}</div>
+                        <div>Anomalies Detected: {results['anomalies_detected']}</div>
+                        <div>Confidence Score: {results['confidence_score']:.2f}</div>
+                        <div>Methods Used: {', '.join(results['detection_methods'])}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
         
-        **Current Status:**
-        - yfinance: {'✅ Available' if YFINANCE_AVAILABLE else '❌ Not Installed'}
-        - Kaggle: ❌ (Simulated - No API required)
-        """)
+        with col2:
+            st.markdown("#### 🎯 DETECTION METHODS")
+            methods = [
+                "ISOLATION_FOREST",
+                "ONE_CLASS_SVM", 
+                "STATISTICAL_ANALYSIS",
+                "CLUSTERING_BASED",
+                "DEEP_ANOMALY_DETECT"
+            ]
+            
+            for method in methods:
+                st.markdown(f"""
+                <div class="log-entry">
+                    <span class="status-online"></span>
+                    {method}
+                </div>
+                """, unsafe_allow_html=True)
+
+def render_system_logs():
+    """Render system logs and audit trail"""
+    st.markdown("### 📋 SYSTEM LOGS & AUDIT TRAIL")
     
-    # Quick actions
-    st.markdown("### 🚀 DEFENSE ACTIONS")
-    cols = st.columns(7)
+    # Generate sample logs
+    log_levels = ['INFO', 'WARNING', 'ERROR', 'CRITICAL']
+    log_sources = ['SOC-AGENT-01', 'SOC-AGENT-02', 'DEFENSE-CORE', 'DETECTION-ENGINE', 'DATA-INGEST']
+    log_messages = [
+        'Data stream analysis initiated',
+        'Anomaly detected in feature space',
+        'Defense mechanism activated',
+        'Threat neutralized successfully',
+        'System health check passed',
+        'Performance degradation detected',
+        'Security policy updated',
+        'Backup operation completed'
+    ]
     
-    with cols[0]:
-        if st.button("🧪 Attack Sim", use_container_width=True, key="quick_attack"):
-            st.session_state.current_tab = "Attack Simulator"
+    # Generate recent logs
+    logs = []
+    for i in range(50):
+        log_time = datetime.now() - timedelta(minutes=random.randint(1, 120))
+        logs.append({
+            'timestamp': log_time,
+            'level': random.choice(log_levels),
+            'source': random.choice(log_sources),
+            'message': random.choice(log_messages)
+        })
     
-    with cols[1]:
-        if st.button("🔍 Detection", use_container_width=True, key="quick_detect"):
-            st.session_state.current_tab = "Poisoning Detector"
+    # Sort logs by timestamp
+    logs.sort(key=lambda x: x['timestamp'], reverse=True)
     
-    with cols[2]:
-        if st.button("🛡️ Defense", use_container_width=True, key="quick_defense"):
-            st.session_state.current_tab = "Defense Mechanisms"
+    # Display logs
+    log_container = st.container()
+    with log_container:
+        for log in logs[:20]:  # Show last 20 logs
+            level_color = {
+                'INFO': '#00ff00',
+                'WARNING': '#ffff00', 
+                'ERROR': '#ffaa00',
+                'CRITICAL': '#ff0000'
+            }
+            
+            st.markdown(f"""
+            <div class="log-entry">
+                <span style="color: {level_color[log['level']]};">[{log['level']}]</span>
+                <span style="color: #00ffff;">{log['timestamp'].strftime('%H:%M:%S')}</span>
+                <span style="color: #ffff00;">{log['source']}</span>
+                <span>{log['message']}</span>
+            </div>
+            """, unsafe_allow_html=True)
+
+# --- MAIN TERMINAL INTERFACE ---
+
+def render_cyber_terminal():
+    """Main cyber defense terminal interface"""
     
-    with cols[3]:
-        if st.button("🔬 Advanced", use_container_width=True, key="quick_advanced"):
-            st.session_state.current_tab = "Advanced Detection"
+    # Render terminal header
+    render_terminal_header()
     
-    with cols[4]:
-        if st.button("📁 Data Hub", use_container_width=True, key="quick_data_hub"):
-            st.session_state.current_tab = "Data Upload Center"
-    
-    with cols[5]:
-        if st.button("🇮🇳 India Data", use_container_width=True, key="quick_india"):
-            st.session_state.current_tab = "Indian Data Sources"
-    
-    with cols[6]:
-        if st.button("🔒 Logout", use_container_width=True, key="quick_logout"):
-            st.session_state.authenticated = False
-            st.rerun()
-    
-    # Main tabs
-    if 'current_tab' not in st.session_state:
-        st.session_state.current_tab = "Attack Simulator"
-    
-    tabs = st.tabs([
-        "🧪 Attack Simulator", 
-        "🔍 Poisoning Detector", 
-        "🛡️ Defense Mechanisms",
-        "🔬 Advanced Detection",
-        "📁 Data Upload Center", 
-        "🇮🇳 Indian Data Sources",
-        "📊 Live Data Integration",
-        "💻 System Monitor"
+    # Navigation tabs
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "📊 DASHBOARD", 
+        "🎯 THREAT INTEL", 
+        "🛡️ DEFENSE OPS", 
+        "📋 SYSTEM LOGS",
+        "⚙️ COMMAND CENTER"
     ])
     
-    with tabs[0]:
-        render_data_poisoning_simulator()
+    with tab1:
+        render_dashboard_overview()
     
-    with tabs[1]:
-        render_poisoning_detector()
+    with tab2:
+        render_threat_intelligence()
     
-    with tabs[2]:
-        render_defense_mechanisms()
+    with tab3:
+        render_data_defense_operations()
     
-    with tabs[3]:
-        render_advanced_detection()
+    with tab4:
+        render_system_logs()
     
-    with tabs[4]:
-        render_data_upload_center()
+    with tab5:
+        render_command_center()
+
+def render_command_center():
+    """Render command and control center"""
+    st.markdown("### ⚙️ COMMAND & CONTROL CENTER")
     
-    with tabs[5]:
-        render_indian_data_sources()
+    col1, col2 = st.columns([2, 1])
     
-    with tabs[6]:
-        render_live_data_integration()
+    with col1:
+        st.markdown("#### 🎮 SYSTEM CONTROLS")
+        
+        control_col1, control_col2, control_col3 = st.columns(3)
+        
+        with control_col1:
+            if st.button("🔄 SYSTEM SCAN", use_container_width=True):
+                st.markdown("""
+                <div class="alert-low">
+                    🔍 INITIATING FULL SYSTEM SCAN<br>
+                    Estimated completion: 2 minutes
+                </div>
+                """, unsafe_allow_html=True)
+            
+            if st.button("🛡️ DEFENSE TEST", use_container_width=True):
+                st.markdown("""
+                <div class="alert-low">
+                    🧪 RUNNING DEFENSE EFFECTIVENESS TEST<br>
+                    All defense systems operational
+                </div>
+                """, unsafe_allow_html=True)
+        
+        with control_col2:
+            if st.button("📊 UPDATE INTELLIGENCE", use_container_width=True):
+                st.markdown("""
+                <div class="alert-low">
+                    🌐 DOWNLOADING LATEST THREAT INTELLIGENCE<br>
+                    Threat database updated successfully
+                </div>
+                """, unsafe_allow_html=True)
+            
+            if st.button("🔍 AUDIT TRAIL", use_container_width=True):
+                st.markdown("""
+                <div class="alert-low">
+                    📋 GENERATING SECURITY AUDIT REPORT<br>
+                    Report available for download
+                </div>
+                """, unsafe_allow_html=True)
+        
+        with control_col3:
+            if st.button("🚨 INCIDENT RESPONSE", use_container_width=True):
+                st.markdown("""
+                <div class="alert-high">
+                    🚀 ACTIVATING INCIDENT RESPONSE PROTOCOL<br>
+                    All SOC agents notified
+                </div>
+                """, unsafe_allow_html=True)
+            
+            if st.button("💾 BACKUP SYSTEMS", use_container_width=True):
+                st.markdown("""
+                <div class="alert-low">
+                    💾 INITIATING SYSTEM BACKUP<br>
+                    Backup in progress...
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # Command line interface
+        st.markdown("#### 💻 COMMAND LINE INTERFACE")
+        st.markdown("""
+        <div class="command-line">
+            root@cyber-defense-terminal:~# <span id="cursor">█</span>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        command = st.text_input("Enter command:", placeholder="Type 'help' for available commands", label_visibility="collapsed")
+        
+        if command:
+            if command.lower() == 'help':
+                st.markdown("""
+                <div class="data-panel">
+                    <strong>Available Commands:</strong><br>
+                    • status - Show system status<br>
+                    • scan - Run security scan<br>
+                    • agents - List active agents<br>
+                    • incidents - Show recent incidents<br>
+                    • defend - Activate defense systems<br>
+                </div>
+                """, unsafe_allow_html=True)
+            elif command.lower() == 'status':
+                st.markdown("""
+                <div class="data-panel">
+                    <strong>System Status:</strong><br>
+                    • Defense Systems: OPERATIONAL<br>
+                    • Threat Level: MEDIUM<br>
+                    • Agents Online: 2/3<br>
+                    • Active Incidents: 1<br>
+                </div>
+                """, unsafe_allow_html=True)
     
-    with tabs[7]:
-        render_system_monitor()
+    with col2:
+        st.markdown("#### 🔧 SYSTEM CONFIGURATION")
+        
+        st.markdown("""
+        <div class="data-panel">
+            <strong>DEFENSE CONFIGURATION</strong><br>
+            <hr style="border-color: #00ffff;">
+            <div>Auto-Response: <span style="color: #00ff00;">ENABLED</span></div>
+            <div>Threat Intelligence: <span style="color: #00ff00;">ACTIVE</span></div>
+            <div>Log Retention: <span style="color: #00ff00;">90 DAYS</span></div>
+            <div>Backup Frequency: <span style="color: #00ff00;">DAILY</span></div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div class="data-panel">
+            <strong>NETWORK STATUS</strong><br>
+            <hr style="border-color: #00ffff;">
+            <div>Data Ingest: <span style="color: #00ff00;">NORMAL</span></div>
+            <div>API Gateway: <span style="color: #00ff00;">OPERATIONAL</span></div>
+            <div>Database: <span style="color: #00ff00;">ONLINE</span></div>
+            <div>Monitoring: <span style="color: #00ff00;">ACTIVE</span></div>
+        </div>
+        """, unsafe_allow_html=True)
+
+# --- AUTHENTICATION ---
+
+def render_login():
+    """Enterprise terminal login"""
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #001122 0%, #003366 100%);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Share Tech Mono', monospace;
+    ">
+        <div style="
+            background: rgba(0, 20, 40, 0.9);
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 0 50px #00ffff33;
+            width: 400px;
+        ">
+            <h1 style="color: #00ffff; margin-bottom: 2rem;">🛡️ CYBER DEFENSE TERMINAL</h1>
+            <h3 style="color: #00ff00; margin-bottom: 2rem;">SECURE ACCESS REQUIRED</h3>
+    """, unsafe_allow_html=True)
+    
+    with st.form("enterprise_login"):
+        username = st.text_input("OPERATOR ID:", placeholder="Enter operator ID")
+        password = st.text_input("ACCESS CODE:", type="password", placeholder="Enter access code")
+        facility = st.selectbox("FACILITY:", ["PRIMARY SOC", "SECONDARY SOC", "FIELD OPERATIONS"])
+        
+        if st.form_submit_button("🚀 INITIATE SYSTEM ACCESS", use_container_width=True):
+            if username == "operator" and password == "defense123":
+                st.session_state.authenticated = True
+                st.session_state.login_time = datetime.now()
+                st.session_state.facility = facility
+                st.success("✅ ACCESS GRANTED | INITIALIZING TERMINAL...")
+                time.sleep(2)
+                st.rerun()
+            else:
+                st.error("❌ ACCESS DENIED | INVALID CREDENTIALS")
+    
+    st.markdown("""
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # --- MAIN APPLICATION ---
 
 def main():
     with quantum_resource_manager():
-        # Authentication
+        # Initialize session state
         if 'authenticated' not in st.session_state:
             st.session_state.authenticated = False
         
         if not st.session_state.authenticated:
             render_login()
         else:
-            render_main_dashboard()
+            render_cyber_terminal()
 
 if __name__ == "__main__":
     main()
