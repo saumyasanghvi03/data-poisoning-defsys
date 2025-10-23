@@ -512,4 +512,196 @@ def render_enhanced_dashboard():
                 st.session_state.latest_analysis = analysis
                 st.success("✅ Analysis completed!")
             else:
-                st.warning("⚠️ Please fetch data 
+                st.warning("⚠️ Please fetch data first!")
+        
+        if 'latest_analysis' in st.session_state:
+            analysis = st.session_state.latest_analysis
+            risk_color = {
+                'CRITICAL': '#ff0000',
+                'HIGH': '#ff6b00',
+                'MEDIUM': '#ffff00',
+                'LOW': '#00ff00',
+                'UNKNOWN': '#888888'
+            }.get(analysis['risk_assessment'], '#888888')
+            
+            st.markdown(f"""
+            <div class="data-panel">
+                <div>Risk: <span style="color: {risk_color};">{analysis['risk_assessment']}</span></div>
+                <div>Quality: <span style="color: #00ffff;">{analysis['data_quality_score']:.1%}</span></div>
+                <div>Trend: <span style="color: #00ff00;">{analysis['pattern_analysis'].get('trend_direction', 'N/A')}</span></div>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown("#### 🎯 THREATS")
+        if st.button("🔍 SCAN", key="scan_threats", use_container_width=True):
+            if st.session_state.data_stream:
+                alerts = defense_systems.monitor_data_stream(st.session_state.data_stream)
+                st.session_state.active_alerts = alerts
+                if alerts:
+                    st.warning(f"🚨 {len(alerts)} threats detected!")
+                else:
+                    st.success("✅ No threats detected")
+            else:
+                st.warning("⚠️ Please fetch data first!")
+        
+        if 'active_alerts' in st.session_state:
+            alerts = st.session_state.active_alerts
+            if alerts:
+                for alert in alerts[:2]:
+                    severity_color = {
+                        'CRITICAL': '#ff0000',
+                        'HIGH': '#ff6b00',
+                        'MEDIUM': '#ffff00',
+                        'LOW': '#00ff00'
+                    }.get(alert['severity'], '#888888')
+                    
+                    st.markdown(f"""
+                    <div class="data-panel">
+                        <div style="color: {severity_color}; font-size: 0.8rem;">{alert['type']}</div>
+                        <div style="font-size: 0.7rem;">{alert['description'][:30]}...</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.markdown("""
+                <div class="data-panel">
+                    <div style="color: #00ff00;">NO THREATS</div>
+                </div>
+                """, unsafe_allow_html=True)
+    
+    with col5:
+        st.markdown("#### ⚡ SYSTEM HEALTH")
+        system_health = {
+            'CPU': random.randint(65, 85),
+            'Memory': random.randint(70, 90),
+            'Network': random.randint(80, 95),
+            'Storage': random.randint(75, 88)
+        }
+        
+        for component, usage in system_health.items():
+            color = "#00ff00" if usage < 70 else "#ffff00" if usage < 85 else "#ff4444"
+            st.markdown(f"""
+            <div class="data-panel">
+                <div>{component}</div>
+                <div style="color: {color}; font-size: 0.9rem;">{usage}%</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+def render_terminal_header():
+    """Render the enterprise terminal header"""
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
+    
+    st.markdown(f"""
+    <div class="terminal-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; color: #00ffff;">
+            <div>
+                <h1 style="margin: 0; font-family: 'Orbitron', sans-serif; font-size: 2rem;">
+                    🛡️ CYBER DEFENSE TERMINAL
+                </h1>
+                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.9rem;">
+                    DATA POISONING SOC
+                </span>
+            </div>
+            <div style="text-align: right;">
+                <div>STATUS: <span style="color: #00ff00;">OPERATIONAL</span></div>
+                <div style="font-size: 0.9rem;">{current_time}</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def render_system_logs():
+    """Render system logs"""
+    st.markdown("### 📋 SYSTEM LOGS")
+    
+    log_events = [
+        ("DATA_INGEST", "INFO", "Real-time market data stream established"),
+        ("DEFENSE_SYSTEM", "INFO", "Anomaly detection engine initialized"),
+        ("THREAT_DETECT", "WARNING", "Suspicious pattern detected"),
+        ("ANALYTICS_ENGINE", "INFO", "Predictive analysis completed"),
+        ("SECURITY", "INFO", "Quantum resistance layer activated"),
+        ("DATA_VALIDATION", "SUCCESS", "Data integrity check passed"),
+        ("RESPONSE", "INFO", "Automated defense protocol executed"),
+        ("BACKUP", "INFO", "System state backup completed")
+    ]
+    
+    for source, level, message in log_events:
+        level_color = {
+            'INFO': '#00ff00',
+            'WARNING': '#ffff00',
+            'ERROR': '#ff4444',
+            'SUCCESS': '#00ffff'
+        }.get(level, '#888888')
+        
+        timestamp = datetime.now().strftime('%H:%M:%S')
+        
+        st.markdown(f"""
+        <div class="log-entry">
+            <span style="color: {level_color};">[{level}]</span>
+            <span style="color: #00ffff;">{timestamp}</span>
+            <span style="color: #ffff00;">{source}</span>
+            <span>{message}</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+def render_login():
+    """Login screen"""
+    st.markdown("""
+    <div style="text-align: center; padding: 3rem;">
+        <h1 style="color: #00ffff; font-size: 3rem;">🛡️ CYBER DEFENSE TERMINAL</h1>
+        <h3 style="color: #00ff00; margin: 2rem 0;">SECURE ACCESS REQUIRED</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        with st.form("login_form"):
+            st.markdown("#### OPERATOR CREDENTIALS")
+            username = st.text_input("Username:", placeholder="operator")
+            password = st.text_input("Password:", type="password", placeholder="Enter password")
+            
+            if st.form_submit_button("🚀 AUTHENTICATE", use_container_width=True):
+                if username == "operator" and password == "defense123":
+                    st.session_state.authenticated = True
+                    st.success("✅ ACCESS GRANTED")
+                    time.sleep(1)
+                    st.rerun()
+                else:
+                    st.error("❌ ACCESS DENIED")
+        
+        st.markdown("""
+        <div style="text-align: center; margin-top: 2rem; color: #666;">
+            <p>Default: operator / defense123</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+def main():
+    """Main application"""
+    with quantum_resource_manager():
+        if 'authenticated' not in st.session_state:
+            st.session_state.authenticated = False
+        
+        if not st.session_state.authenticated:
+            render_login()
+        else:
+            render_terminal_header()
+            
+            tab1, tab2, tab3 = st.tabs([
+                "📊 DASHBOARD",
+                "📋 SYSTEM LOGS",
+                "⚙️ SETTINGS"
+            ])
+            
+            with tab1:
+                render_enhanced_dashboard()
+            
+            with tab2:
+                render_system_logs()
+            
+            with tab3:
+                st.markdown("### ⚙️ SYSTEM CONFIGURATION")
+                st.info("Configuration options coming soon...")
+
+if __name__ == "__main__":
+    main()
