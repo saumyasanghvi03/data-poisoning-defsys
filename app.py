@@ -703,7 +703,8 @@ class QuantumAnalyticsEngine:
         if not data_stream:
             return 0.0
         
-        completeness = len([d for d in data_stream if all(key in d for key in ['price', 'volume', 'sentiment_score']]) / len(data_stream)
+        # FIXED: Added missing closing parenthesis
+        completeness = len([d for d in data_stream if all(key in d for key in ['price', 'volume', 'sentiment_score'])]) / len(data_stream)
         consistency = self._calculate_data_consistency(data_stream)
         return (completeness + consistency) / 2
     
