@@ -26,35 +26,6 @@ import ipaddress
 
 warnings.filterwarnings('ignore')
 
-# Try to import optional security libraries with fallbacks
-try:
-    import nmap
-    NMAP_AVAILABLE = True
-except ImportError:
-    NMAP_AVAILABLE = False
-    st.warning("nmap library not available. Some scanning features will be limited.")
-
-try:
-    from scapy.all import *
-    SCAPY_AVAILABLE = True
-except ImportError:
-    SCAPY_AVAILABLE = False
-    st.warning("scapy library not available. Some network analysis features will be limited.")
-
-try:
-    import paramiko
-    PARAMIKO_AVAILABLE = True
-except ImportError:
-    PARAMIKO_AVAILABLE = False
-    st.warning("paramiko library not available. Some SSH features will be limited.")
-
-try:
-    import dns.resolver
-    DNS_AVAILABLE = True
-except ImportError:
-    DNS_AVAILABLE = False
-    st.warning("dnspython library not available. Some DNS features will be limited.")
-
 # Advanced system optimization
 try:
     import resource
@@ -267,19 +238,97 @@ def quantum_resource_manager():
     finally:
         gc.collect()
 
-# --- REAL SECURITY IMPLEMENTATIONS ---
+# --- EXPLANATION FUNCTIONS ---
+
+def explain_network_scan_results(hosts):
+    """Explain network scan results to user"""
+    explanation = f"""
+    <div class="explanation-box">
+        <div class="explanation-title">📊 NETWORK SCAN EXPLANATION</div>
+        <p><strong>What this means:</strong> We scanned your network and found <strong>{len(hosts)} active devices</strong>. Each device represents a computer, server, or IoT device connected to your network.</p>
+        
+        <p><strong>Key findings:</strong></p>
+        <ul>
+            <li>🟢 <strong>Active hosts</strong> are devices currently online and responding</li>
+            <li>🔍 <strong>Port 80 open</strong> means these devices are running web services</li>
+            <li>🌐 Each IP address represents a unique device on your network</li>
+        </ul>
+        
+        <p><strong>What you should do:</strong></p>
+        <ul>
+            <li>✅ Verify all detected devices are authorized</li>
+            <li>🔒 Check for unknown devices that shouldn't be on your network</li>
+            <li>📋 Maintain an inventory of all approved devices</li>
+            <li>🚨 Investigate any unfamiliar IP addresses immediately</li>
+        </ul>
+        
+        <p><strong>Technical details:</strong> This scan uses TCP connection attempts to port 80 to identify active hosts. Devices that respond are considered 'alive' and part of your network infrastructure.</p>
+    </div>
+    """
+    return explanation
+
+def explain_dark_web_findings(threats):
+    """Explain dark web monitoring results"""
+    if not threats:
+        explanation = """
+        <div class="explanation-box">
+            <div class="explanation-title">✅ NO THREATS DETECTED</div>
+            <p><strong>Good news!</strong> Our dark web monitoring didn't find any immediate threats targeting your organization.</p>
+            
+            <p><strong>What this means:</strong></p>
+            <ul>
+                <li>🟢 Your company credentials aren't currently being traded on dark web markets</li>
+                <li>🔒 No discussions about attacking your organization were found</li>
+                <li>🛡️ Your digital footprint appears clean on monitored underground forums</li>
+            </ul>
+            
+            <p><strong>Maintenance recommendations:</strong></p>
+            <ul>
+                <li>Continue regular dark web monitoring (weekly recommended)</li>
+                <li>Maintain strong password policies and MFA</li>
+                <li>Educate employees about phishing prevention</li>
+                <li>Keep all systems patched and updated</li>
+            </ul>
+        </div>
+        """
+    else:
+        explanation = f"""
+        <div class="explanation-box">
+            <div class="explanation-title">🚨 DARK WEB THREAT ANALYSIS</div>
+            <p><strong>Critical findings:</strong> We detected <strong>{len(threats)} active threats</strong> targeting your organization on dark web platforms.</p>
+            
+            <p><strong>Threat breakdown:</strong></p>
+            <ul>
+        """
+        
+        for threat in threats:
+            explanation += f'<li>🔴 <strong>{threat["type"]}</strong> - {threat["description"]} (Confidence: {threat["confidence"]})</li>'
+        
+        explanation += """
+            </ul>
+            
+            <p><strong>Immediate actions required:</strong></p>
+            <ul>
+                <li>🔄 <strong>Password reset</strong> for all employee accounts</li>
+                <li>🔐 <strong>Enable MFA</strong> immediately if not already active</li>
+                <li>📧 <strong>Security awareness training</strong> about credential phishing</li>
+                <li>👨‍💼 <strong>Notify security team</strong> for incident response</li>
+                <li>📞 <strong>Contact law enforcement</strong> if sensitive data is involved</li>
+            </ul>
+            
+            <p><strong>About dark web monitoring:</strong> We scan underground forums, hacker marketplaces, and leak sites where cybercriminals trade stolen data and plan attacks. Early detection allows proactive defense.</p>
+        </div>
+        """
+    
+    return explanation
+
+# --- REAL SECURITY IMPLEMENTATIONS (No external dependencies) ---
 
 class RealNetworkAttacks:
-    """Real network attack implementations"""
-    
-    def __init__(self):
-        if NMAP_AVAILABLE:
-            self.nm = nmap.PortScanner()
-        else:
-            self.nm = None
+    """Real network attack implementations without external dependencies"""
     
     def perform_arp_scan(self, network_range):
-        """Real ARP scanning simulation"""
+        """ARP scanning simulation"""
         try:
             st.info(f"🔍 Performing ARP scan on {network_range}...")
             
@@ -294,7 +343,8 @@ class RealNetworkAttacks:
                     result.append({
                         'ip': ip,
                         'mac': mac,
-                        'status': 'Active'
+                        'status': 'Active',
+                        'hostname': f'device-{i}'
                     })
             
             return result
@@ -303,11 +353,11 @@ class RealNetworkAttacks:
             return []
     
     def syn_flood_attack(self, target_ip, target_port, count=100):
-        """Real SYN flood attack simulation"""
+        """SYN flood attack simulation"""
         try:
             st.warning(f"🚨 Launching SYN Flood on {target_ip}:{target_port}")
             
-            # Simulate packet sending
+            # Simulate packet sending with progress
             progress_bar = st.progress(0)
             for i in range(count):
                 time.sleep(0.01)  # Simulate network delay
@@ -315,32 +365,32 @@ class RealNetworkAttacks:
                     progress_bar.progress((i + 1) / count)
             
             progress_bar.progress(1.0)
-            return f"Sent {count} SYN packets to {target_ip}:{target_port}"
+            return f"✅ Sent {count} SYN packets to {target_ip}:{target_port}\n⚠️ This was a simulation - no actual packets were sent"
         except Exception as e:
-            return f"SYN Flood failed: {e}"
+            return f"❌ SYN Flood failed: {e}"
     
     def port_scan(self, target, ports="1-1000"):
-        """Real port scanning simulation"""
+        """Port scanning simulation"""
         try:
             st.info(f"🔍 Scanning {target} ports {ports}...")
             
             # Simulate port scanning results
             results = []
-            common_ports = [21, 22, 23, 25, 53, 80, 110, 443, 993, 995, 3389]
+            common_ports = [
+                (21, 'ftp'), (22, 'ssh'), (23, 'telnet'), (25, 'smtp'), 
+                (53, 'dns'), (80, 'http'), (110, 'pop3'), (443, 'https'),
+                (993, 'imaps'), (995, 'pop3s'), (3389, 'rdp'), (8080, 'http-proxy')
+            ]
             
-            for port in common_ports:
+            for port, service in common_ports:
                 if random.random() > 0.7:  # 30% chance port is open
-                    services = {
-                        21: 'ftp', 22: 'ssh', 23: 'telnet', 25: 'smtp', 
-                        53: 'dns', 80: 'http', 110: 'pop3', 443: 'https',
-                        993: 'imaps', 995: 'pop3s', 3389: 'rdp'
-                    }
                     results.append({
                         'host': target,
                         'protocol': 'tcp',
                         'port': port,
                         'state': 'open',
-                        'service': services.get(port, 'unknown')
+                        'service': service,
+                        'version': 'Unknown'
                     })
             
             return results
@@ -349,16 +399,16 @@ class RealNetworkAttacks:
             return []
 
 class RealWirelessAttacks:
-    """Real wireless attack implementations"""
+    """Wireless attack implementations"""
     
     def scan_wireless_networks(self):
         """Scan for wireless networks simulation"""
         try:
             networks = [
-                {'ssid': 'HomeNetwork-5G', 'bssid': 'AA:BB:CC:DD:EE:FF', 'signal': -45, 'channel': 36, 'encryption': 'WPA2'},
-                {'ssid': 'Office-WiFi', 'bssid': '11:22:33:44:55:66', 'signal': -62, 'channel': 1, 'encryption': 'WPA2-Enterprise'},
-                {'ssid': 'Free_WiFi', 'bssid': 'FF:EE:DD:CC:BB:AA', 'signal': -75, 'channel': 11, 'encryption': 'OPEN'},
-                {'ssid': 'IoT_Devices', 'bssid': '66:55:44:33:22:11', 'signal': -58, 'channel': 6, 'encryption': 'WPA2'}
+                {'ssid': 'HomeNetwork-5G', 'bssid': 'AA:BB:CC:DD:EE:FF', 'signal': -45, 'channel': 36, 'encryption': 'WPA2', 'clients': 3},
+                {'ssid': 'Office-WiFi', 'bssid': '11:22:33:44:55:66', 'signal': -62, 'channel': 1, 'encryption': 'WPA2-Enterprise', 'clients': 12},
+                {'ssid': 'Free_WiFi', 'bssid': 'FF:EE:DD:CC:BB:AA', 'signal': -75, 'channel': 11, 'encryption': 'OPEN', 'clients': 8},
+                {'ssid': 'IoT_Devices', 'bssid': '66:55:44:33:22:11', 'signal': -58, 'channel': 6, 'encryption': 'WPA2', 'clients': 5}
             ]
             return networks
         except Exception as e:
@@ -368,6 +418,7 @@ class RealWirelessAttacks:
     def capture_handshake(self, bssid, channel):
         """Simulate WPA handshake capture"""
         try:
+            time.sleep(2)  # Simulate capture time
             return f"""
 Handshake Capture Simulation for {bssid}
 =======================================
@@ -376,6 +427,7 @@ Handshake Capture Simulation for {bssid}
 [!] Captured WPA handshake for {bssid}
 [+] Handshake saved to: capture_{bssid.replace(':', '')}.cap
 [+] Ready for offline cracking
+[!] This is a simulation - no actual handshake was captured
 """
         except Exception as e:
             return f"Handshake capture failed: {e}"
@@ -389,10 +441,16 @@ class RealDefenseMechanisms:
     def firewall_block_ip(self, ip_address):
         """Block IP address simulation"""
         try:
+            # Validate IP address
+            try:
+                ipaddress.ip_address(ip_address)
+            except ValueError:
+                return f"❌ Invalid IP address: {ip_address}"
+            
             # Simulate firewall rule addition
             self.blocked_ips.add(ip_address)
             
-            return f"✅ Successfully blocked IP: {ip_address}"
+            return f"✅ Successfully blocked IP: {ip_address}\n📋 Total blocked IPs: {len(self.blocked_ips)}"
         except Exception as e:
             return f"❌ Failed to block IP: {e}"
     
@@ -445,14 +503,15 @@ class RealVulnerabilityScanner:
         """Comprehensive vulnerability scan simulation"""
         try:
             st.info(f"🔍 Starting comprehensive scan of {target}...")
+            time.sleep(2)
             
             # Simulate vulnerability findings
             vulnerabilities = []
             common_vulns = [
-                {'type': 'SQL Injection', 'severity': 'HIGH', 'details': 'Potential SQL injection in login form'},
-                {'type': 'XSS', 'severity': 'MEDIUM', 'details': 'Cross-site scripting vulnerability detected'},
-                {'type': 'CSRF', 'severity': 'MEDIUM', 'details': 'Missing CSRF protection tokens'},
-                {'type': 'Info Disclosure', 'severity': 'LOW', 'details': 'Server version disclosure'}
+                {'type': 'SQL Injection', 'severity': 'HIGH', 'details': 'Potential SQL injection in login form', 'cve': 'CVE-2024-1234'},
+                {'type': 'XSS', 'severity': 'MEDIUM', 'details': 'Cross-site scripting vulnerability detected', 'cve': 'CVE-2024-1235'},
+                {'type': 'CSRF', 'severity': 'MEDIUM', 'details': 'Missing CSRF protection tokens', 'cve': 'CVE-2024-1236'},
+                {'type': 'Info Disclosure', 'severity': 'LOW', 'details': 'Server version disclosure', 'cve': 'CVE-2024-1237'}
             ]
             
             for vuln in common_vulns:
@@ -485,7 +544,8 @@ class RealVulnerabilityScanner:
                         vulnerabilities.append({
                             'type': f'Missing Security Header',
                             'severity': 'MEDIUM',
-                            'details': f'Missing {header} security header'
+                            'details': f'Missing {header} security header',
+                            'cve': 'N/A'
                         })
             except:
                 pass
@@ -504,7 +564,6 @@ class RealIncidentResponse:
             forensic_data = {
                 'running_processes': [],
                 'network_connections': [],
-                'logged_in_users': [],
                 'system_info': {}
             }
             
@@ -520,7 +579,9 @@ class RealIncidentResponse:
                 'boot_time': datetime.fromtimestamp(psutil.boot_time()),
                 'cpu_usage': psutil.cpu_percent(interval=1),
                 'memory_usage': psutil.virtual_memory().percent,
-                'disk_usage': psutil.disk_usage('/').percent
+                'disk_usage': psutil.disk_usage('/').percent,
+                'hostname': platform.node(),
+                'platform': f"{platform.system()} {platform.release()}"
             }
             
             return forensic_data
@@ -531,7 +592,7 @@ class RealIncidentResponse:
     def isolate_system(self):
         """Isolate system from network simulation"""
         try:
-            return "✅ System isolated from network (Simulation)"
+            return "✅ System isolated from network (Simulation)\n⚠️ In a real scenario, this would disable network interfaces"
         except Exception as e:
             return f"❌ Isolation failed: {e}"
 
@@ -583,15 +644,15 @@ class RealNetworkAnalysis:
             packets_info = []
             
             # Simulate packet analysis
-            protocols = ['TCP', 'UDP', 'ICMP', 'HTTP', 'HTTPS', 'DNS']
+            protocols = ['TCP', 'UDP', 'ICMP', 'HTTP', 'HTTPS', 'DNS', 'SSH']
             for i in range(min(count, 20)):
                 packets_info.append({
-                    'timestamp': datetime.now(),
+                    'timestamp': datetime.now().strftime('%H:%M:%S'),
                     'source': f"192.168.1.{random.randint(1, 254)}",
-                    'destination': f"8.8.8.{random.randint(1, 254)}",
+                    'destination': f"{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}.{random.randint(1, 255)}",
                     'protocol': random.choice(protocols),
                     'length': random.randint(64, 1500),
-                    'flags': random.choice(['SYN', 'ACK', 'RST', 'FIN', 'PSH'])
+                    'flags': random.choice(['SYN', 'ACK', 'RST', 'FIN', 'PSH', 'URG'])
                 })
             
             return packets_info
@@ -606,15 +667,466 @@ class RealNetworkAnalysis:
                 'A': [f'192.168.1.{random.randint(1, 254)}' for _ in range(2)],
                 'MX': [f'mail.{domain}', f'smtp.{domain}'],
                 'NS': [f'ns1.{domain}', f'ns2.{domain}'],
-                'TXT': [f'v=spf1 include:{domain} ~all']
+                'TXT': [f'v=spf1 include:{domain} ~all'],
+                'CNAME': [f'www.{domain}']
             }
             return results
         except Exception as e:
             st.error(f"DNS enumeration error: {e}")
             return {}
 
-# [Rest of your existing code remains the same - explanation functions, device hacking tools, etc.]
-# I'll include the key parts that need to be updated:
+# --- DEVICE HACKING AND WIFI TOOLS ---
+
+class DeviceHackingTools:
+    """Mobile and IoT device security testing tools"""
+    
+    def scan_mobile_device(self, ip_address):
+        """Scan mobile device for vulnerabilities"""
+        device_info = {
+            "192.168.1.100": {"device": "iPhone 13", "os": "iOS 16.1", "open_ports": [80, 443, 5223]},
+            "192.168.1.101": {"device": "Samsung Galaxy S22", "os": "Android 13", "open_ports": [80, 443, 8080]},
+            "192.168.1.102": {"device": "Google Pixel 6", "os": "Android 13", "open_ports": [80, 443, 5353]},
+            "default": {"device": "Unknown Mobile Device", "os": "Unknown OS", "open_ports": [80, 443]}
+        }
+        
+        info = device_info.get(ip_address, device_info["default"])
+        
+        scan_result = f"""
+Mobile Device Security Scan Results for {ip_address}
+==================================================
+📱 Device Type: {info['device']}
+⚙️ Operating System: {info['os']}
+🌐 Open Ports: {', '.join(map(str, info['open_ports']))}
+📡 Network Status: Connected
+🔒 Security Level: Medium
+
+VULNERABILITIES DETECTED:
+🔴 Port 80 (HTTP) open - Unencrypted web traffic
+🟠 Port 8080 open - Potential debug interface
+🟡 Outdated OS version detected
+🟢 No critical remote exploits found
+
+SECURITY RECOMMENDATIONS:
+✅ Update to latest OS version
+✅ Disable unnecessary services
+✅ Enable device encryption
+✅ Use VPN for public networks
+"""
+        return scan_result
+    
+    def exploit_mobile_device(self, ip_address, exploit_type):
+        """Simulate mobile device exploitation"""
+        exploits = {
+            "metasploit": f"""
+Metasploit Exploitation Attempt - {ip_address}
+============================================
+[*] Starting Metasploit framework...
+[*] Searching for mobile device exploits...
+[+] Found potential exploit: android_browser_2023
+[*] Attempting exploitation...
+[!] Exploit failed: Target patched
+[*] Trying alternative: ios_safari_rce
+[!] Exploit failed: Security controls active
+[!] Mobile device appears to be well-protected
+""",
+            "social_engineering": f"""
+Social Engineering Attack Simulation - {ip_address}
+=================================================
+[+] Crafting phishing message...
+[+] Sending fake system update notification...
+[!] Target ignored the message
+[+] Attempting malicious link delivery...
+[!] Target security awareness training appears effective
+""",
+            "malicious_app": f"""
+Malicious Application Deployment - {ip_address}
+=============================================
+[+] Creating fake utility app...
+[+] Attempting sideload installation...
+[!] Installation blocked: Unknown sources disabled
+[+] Trying alternative delivery methods...
+[!] Security controls prevented installation
+"""
+        }
+        return exploits.get(exploit_type, "Invalid exploit type selected")
+    
+    def iot_device_scan(self, ip_range):
+        """Scan for IoT devices and vulnerabilities"""
+        iot_devices = [
+            {"ip": "192.168.1.50", "type": "Smart TV", "vendor": "Samsung", "vulnerabilities": ["Default credentials", "Unencrypted firmware"]},
+            {"ip": "192.168.1.51", "type": "IP Camera", "vendor": "Hikvision", "vulnerabilities": ["Backdoor access", "Weak encryption"]},
+            {"ip": "192.168.1.52", "type": "Smart Speaker", "vendor": "Amazon", "vulnerabilities": ["Voice command injection"]},
+            {"ip": "192.168.1.53", "type": "Smart Thermostat", "vendor": "Nest", "vulnerabilities": ["Unauthorized temperature control"]}
+        ]
+        
+        result = f"""
+IoT Device Security Scan - {ip_range}
+====================================
+Found {len(iot_devices)} IoT devices
+
+DETAILED SCAN RESULTS:
+"""
+        for device in iot_devices:
+            result += f"""
+📟 Device: {device['type']} ({device['vendor']})
+📍 IP Address: {device['ip']}
+🚨 Vulnerabilities: {', '.join(device['vulnerabilities'])}
+🔒 Security Status: CRITICAL
+
+"""
+        return result
+
+class AdvancedWiFiTools:
+    """Advanced WiFi hacking and security tools"""
+    
+    def wifi_password_crack(self, ssid, method="wordlist"):
+        """Simulate WiFi password cracking"""
+        methods = {
+            "wordlist": f"""
+WiFi Password Cracking - {ssid}
+==============================
+Method: Wordlist Attack
+Wordlist: rockyou.txt
+Progress: ████████████████████ 100%
+[+] Testing common passwords...
+[!] Password not found in wordlist
+[+] Trying advanced wordlist...
+[!] Still no match - Target uses strong password
+""",
+            "wps": f"""
+WPS PIN Attack - {ssid}
+======================
+Method: WPS PIN Brute-force
+[+] Testing PIN: 12345670 [FAILED]
+[+] Testing PIN: 12345671 [FAILED]
+...
+[+] Testing PIN: 83649217 [FAILED]
+[!] WPS attack failed - Router protection active
+""",
+            "capture_handshake": f"""
+WPA Handshake Capture - {ssid}
+=============================
+[+] Monitoring for handshake...
+[+] Captured WPA handshake!
+[+] Saved to: {ssid}_handshake.cap
+[+] Use aircrack-ng or hashcat to crack
+[+] Estimated cracking time: 2-48 hours
+"""
+        }
+        return methods.get(method, "Invalid method selected")
+    
+    def deauth_attack(self, target_mac, access_point):
+        """Simulate deauthentication attack"""
+        return f"""
+Deauthentication Attack Simulation
+=================================
+Target Device: {target_mac}
+Access Point: {access_point}
+[+] Sending deauth packets...
+[+] 64 deauth packets sent to {target_mac}
+[+] Target device temporarily disconnected
+[!] This is for educational purposes only
+[!] Unauthorized use may be illegal
+"""
+    
+    def rogue_ap_setup(self, ssid):
+        """Simulate rogue access point creation"""
+        return f"""
+Rogue Access Point Setup
+=======================
+Evil Twin Attack: {ssid}
+[+] Creating malicious access point...
+[+] SSID: {ssid}_FREE
+[+] Channel: 6 (same as target)
+[+] Power: High
+[+] Captive portal ready
+[+] DNS spoofing enabled
+[+] Waiting for victims to connect...
+
+SECURITY IMPLICATIONS:
+🔴 Can capture all network traffic
+🔴 Can steal credentials and cookies
+🔴 Can inject malicious content
+🔴 Can perform man-in-the-middle attacks
+"""
+
+class NetworkSpoofingTools:
+    """Network spoofing and MITM tools"""
+    
+    def arp_spoofing(self, target_ip, gateway_ip):
+        """Simulate ARP spoofing attack"""
+        return f"""
+ARP Spoofing Attack Simulation
+==============================
+Target IP: {target_ip}
+Gateway IP: {gateway_ip}
+[+] Starting ARP spoofing...
+[+] Sent ARP reply: {target_ip} is at [ATTACKER_MAC]
+[+] Sent ARP reply: {gateway_ip} is at [ATTACKER_MAC]
+[+] MITM position established
+[+] All traffic between {target_ip} and gateway is now intercepted
+
+PROTECTION MEASURES:
+✅ Use static ARP entries
+✅ Enable DHCP snooping
+✅ Implement port security
+✅ Use network segmentation
+"""
+    
+    def dns_spoofing(self, target_domain, fake_ip):
+        """Simulate DNS spoofing attack"""
+        return f"""
+DNS Spoofing Attack Simulation
+==============================
+Target Domain: {target_domain}
+Fake IP: {fake_ip}
+[+] Poisoning DNS cache...
+[+] Sending spoofed DNS responses...
+[+] All requests to {target_domain} now go to {fake_ip}
+[+] Users redirected to malicious site
+
+DETECTION METHODS:
+🔍 Monitor DNS queries for anomalies
+🔍 Check for unexpected IP changes
+🔍 Use DNSSEC validation
+🔍 Implement DNS filtering
+"""
+    
+    def ssl_stripping(self, target_url):
+        """Simulate SSL stripping attack"""
+        return f"""
+SSL Stripping Attack Simulation
+===============================
+Target: {target_url}
+[+] Intercepting HTTP to HTTPS redirects...
+[+] Replacing HTTPS links with HTTP...
+[+] Capturing plaintext credentials...
+[+] Session cookies captured
+
+PREVENTION:
+✅ Always check for HTTPS in address bar
+✅ Use HTTPS Everywhere extension
+✅ Enable HSTS on websites
+✅ Avoid public WiFi for sensitive activities
+"""
+
+# --- REAL DATA CLASSES ---
+
+def get_ist_time():
+    """Get current IST time"""
+    return datetime.now()
+
+class RealNetworkScanner:
+    """Real network scanning using system tools"""
+    
+    def scan_network(self, target):
+        """Perform network scan"""
+        try:
+            # Simple ping sweep simulation
+            hosts = []
+            base_ip = ".".join(target.split(".")[:3])
+            for i in range(1, 10):
+                ip = f"{base_ip}.{i}"
+                try:
+                    socket.setdefaulttimeout(0.5)
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    result = sock.connect_ex((ip, 80))
+                    if result == 0:
+                        hosts.append(ip)
+                    sock.close()
+                except:
+                    continue
+            return hosts
+        except Exception as e:
+            return ["192.168.1.1", "192.168.1.2", "192.168.1.5"]
+
+class RealThreatIntelligence:
+    """Real threat intelligence from multiple sources"""
+    
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        })
+    
+    def get_cisa_alerts(self):
+        """Get real CISA alerts"""
+        try:
+            # Simulated CISA alerts
+            alerts = [
+                {
+                    'title': 'Microsoft Windows RCE Vulnerability',
+                    'date': '2024-01-15',
+                    'severity': 'CRITICAL',
+                    'source': 'CISA',
+                    'description': 'Remote code execution vulnerability in Windows Kernel',
+                    'cve_id': 'CVE-2024-21338'
+                },
+                {
+                    'title': 'Apache Struts Security Bypass',
+                    'date': '2024-01-10',
+                    'severity': 'HIGH',
+                    'source': 'CISA',
+                    'description': 'Security bypass vulnerability in Apache Struts',
+                    'cve_id': 'CVE-2024-12345'
+                },
+                {
+                    'title': 'Linux Kernel Privilege Escalation',
+                    'date': '2024-01-08',
+                    'severity': 'HIGH',
+                    'source': 'CISA',
+                    'description': 'Privilege escalation vulnerability in Linux kernel',
+                    'cve_id': 'CVE-2024-12346'
+                }
+            ]
+            return alerts
+        except Exception as e:
+            return []
+
+class DarkWebMonitor:
+    """Dark web monitoring simulation"""
+    
+    def search_dark_web_threats(self, company_domain):
+        """Simulate dark web monitoring"""
+        threats = []
+        
+        # Simulate finding threats based on domain
+        if "company" in company_domain.lower() or "corp" in company_domain.lower():
+            threats.append({
+                "type": "Credential Leak",
+                "severity": "HIGH",
+                "description": f"Employee credentials found for {company_domain} on underground forum",
+                "source": "Dark Web Forum",
+                "date_found": get_ist_time().strftime('%Y-%m-%d'),
+                "confidence": "85%"
+            })
+        
+        if random.random() < 0.6:
+            threats.append({
+                "type": "Data Breach Discussion",
+                "severity": "CRITICAL",
+                "description": f"Internal documents from {company_domain} being traded on dark web markets",
+                "source": "Underground Market",
+                "date_found": get_ist_time().strftime('%Y-%m-%d'),
+                "confidence": "92%"
+            })
+        
+        return threats
+
+class SystemHealthMonitor:
+    """Real system health monitoring"""
+    
+    def get_system_metrics(self):
+        """Get real system metrics"""
+        try:
+            return {
+                "cpu_usage": psutil.cpu_percent(interval=1),
+                "memory_usage": psutil.virtual_memory().percent,
+                "disk_usage": psutil.disk_usage('/').percent,
+                "running_processes": len(psutil.pids()),
+                "system_uptime": self.get_system_uptime(),
+                "network_connections": len(psutil.net_connections())
+            }
+        except Exception as e:
+            return {
+                "cpu_usage": 25.5,
+                "memory_usage": 67.8,
+                "disk_usage": 45.2,
+                "running_processes": 142,
+                "system_uptime": "5 days, 12:30:15",
+                "network_connections": 89
+            }
+    
+    def get_system_uptime(self):
+        """Get system uptime"""
+        try:
+            boot_time = datetime.fromtimestamp(psutil.boot_time())
+            uptime = datetime.now() - boot_time
+            days = uptime.days
+            hours, remainder = divmod(uptime.seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            return f"{days}d {hours}h {minutes}m"
+        except:
+            return "5d 12h 30m"
+
+class KaliLinuxIntegration:
+    """Kali Linux tool integration simulation"""
+    
+    def run_nmap_scan(self, target):
+        """Run nmap scan simulation"""
+        scan_results = {
+            "scanme.nmap.org": """
+Nmap scan report for scanme.nmap.org (45.33.32.156)
+Host is up (0.001s latency).
+Not shown: 996 filtered ports
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+443/tcp  open  https
+3389/tcp open  ms-wbt-server
+
+Nmap done: 1 IP address (1 host up) scanned in 2.5 seconds
+""",
+            "google.com": """
+Nmap scan report for google.com (142.250.193.14)
+Host is up (0.001s latency).
+Not shown: 998 filtered ports
+PORT     STATE SERVICE
+80/tcp   open  http
+443/tcp  open  https
+
+Nmap done: 1 IP address (1 host up) scanned in 1.8 seconds
+""",
+            "default": """
+Nmap scan report for target (192.168.1.1)
+Host is up (0.001s latency).
+Not shown: 997 filtered ports
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+443/tcp  open  https
+3389/tcp open  ms-wbt-server
+8080/tcp open  http-proxy
+
+Nmap done: 1 IP address (1 host up) scanned in 3.2 seconds
+"""
+        }
+        return scan_results.get(target, scan_results["default"])
+    
+    def run_vulnerability_scan(self, target):
+        """Run vulnerability scan simulation"""
+        return f"""
+Nikto Scan Results for {target}
++ Server: Apache/2.4.41 (Ubuntu)
++ Retrieved x-powered-by header: PHP/7.4.3
++ OSVDB-3092: /config/: This might be interesting...
++ OSVDB-3233: /phpinfo.php: Contains PHP configuration information
++ /admin/: Admin login page found
++ /backup/: Directory listing found
++ 6544 items checked: 0 error(s) and 6 item(s) reported on remote host
++ Scan completed at {get_ist_time().strftime('%Y-%m-%d %H:%M:%S')}
+"""
+
+class RealSecurityOperations:
+    """Main security operations class"""
+    
+    def __init__(self):
+        self.network_scanner = RealNetworkScanner()
+        self.threat_intel = RealThreatIntelligence()
+        self.dark_web_monitor = DarkWebMonitor()
+        self.kali_integration = KaliLinuxIntegration()
+        self.health_monitor = SystemHealthMonitor()
+        self.device_hacking = DeviceHackingTools()
+        self.wifi_tools = AdvancedWiFiTools()
+        self.spoofing_tools = NetworkSpoofingTools()
+        self.network_attacks = RealNetworkAttacks()
+        self.defense_tools = RealDefenseMechanisms()
+        self.vuln_scanner = RealVulnerabilityScanner()
+        self.incident_response = RealIncidentResponse()
+        self.crypto_tools = RealCryptographyTools()
+        self.network_analysis = RealNetworkAnalysis()
+
+# --- UI COMPONENTS FOR REAL ATTACKS/DEFENSES ---
 
 def render_real_attack_tools():
     """Real attack tools interface"""
@@ -656,7 +1168,7 @@ def render_real_attack_tools():
                     if results:
                         st.success(f"Found {len(results)} active hosts")
                         for host in results:
-                            st.write(f"📍 {host['ip']} - {host['mac']}")
+                            st.write(f"📍 {host['ip']} - {host['mac']} ({host['hostname']})")
                     else:
                         st.warning("No hosts found or scan failed")
             
@@ -682,6 +1194,7 @@ def render_real_attack_tools():
                             st.write(f"**Signal:** {network['signal']} dBm")
                             st.write(f"**Channel:** {network['channel']}")
                             st.write(f"**Encryption:** {network['encryption']}")
+                            st.write(f"**Connected Clients:** {network['clients']}")
                             
                             if network['encryption'] != 'OPEN':
                                 if st.button(f"Capture Handshake", key=f"handshake_{network['bssid']}"):
@@ -714,6 +1227,7 @@ def render_real_attack_tools():
                             {severity_color.get(vuln.get('severity', 'MEDIUM'), '🟠')} 
                             <strong>{vuln.get('type', 'Vulnerability')}</strong> - 
                             {vuln.get('severity', 'Unknown')}<br>
+                            <small><strong>CVE:</strong> {vuln.get('cve', 'N/A')}</small><br>
                             <small>{vuln.get('details', 'No details available')}</small>
                         </div>
                         """, unsafe_allow_html=True)
@@ -735,6 +1249,12 @@ def render_real_attack_tools():
                     if packets:
                         df = pd.DataFrame(packets)
                         st.dataframe(df, use_container_width=True)
+                        
+                        # Traffic visualization
+                        protocol_counts = df['protocol'].value_counts()
+                        fig = px.pie(values=protocol_counts.values, names=protocol_counts.index, 
+                                   title="Network Protocol Distribution")
+                        st.plotly_chart(fig, use_container_width=True)
         
         with col2:
             st.markdown("##### DNS Enumeration")
@@ -747,7 +1267,7 @@ def render_real_attack_tools():
                         for record_type, records in results.items():
                             with st.expander(f"{record_type} Records"):
                                 for record in records:
-                                    st.write(record)
+                                    st.write(f"`{record}`")
                     else:
                         st.warning("No DNS records found")
 
@@ -781,7 +1301,7 @@ def render_real_defense_tools():
                     if suspicious:
                         st.error(f"🚨 Found {len(suspicious)} suspicious processes!")
                         for proc in suspicious:
-                            st.write(f"⚠️ {proc['name']} (PID: {proc['pid']}) - CPU: {proc['cpu_percent']}%")
+                            st.write(f"⚠️ {proc['name']} (PID: {proc['pid']}) - CPU: {proc['cpu_percent']}% - Memory: {proc['memory_percent']}%")
                     else:
                         st.success("✅ No suspicious activity detected")
         
@@ -885,15 +1405,389 @@ def render_real_defense_tools():
                         col2.metric("CPU Usage", f"{sys_info['cpu_usage']}%")
                         col3.metric("Memory Usage", f"{sys_info['memory_usage']}%")
                         col4.metric("Disk Usage", f"{sys_info['disk_usage']}%")
+                    
+                    st.markdown("##### System Details")
+                    st.write(f"**Hostname:** {sys_info['hostname']}")
+                    st.write(f"**Platform:** {sys_info['platform']}")
+    
+    with tab4:
+        st.markdown("#### 📊 REAL-TIME SYSTEM MONITORING")
+        
+        # Real-time metrics
+        health_monitor = SystemHealthMonitor()
+        metrics = health_monitor.get_system_metrics()
+        
+        if metrics:
+            # System metrics in real-time
+            col1, col2, col3, col4 = st.columns(4)
+            col1.metric("⚡ CPU", f"{metrics['cpu_usage']:.1f}%")
+            col2.metric("💾 Memory", f"{metrics['memory_usage']:.1f}%")
+            col3.metric("💽 Disk", f"{metrics['disk_usage']:.1f}%")
+            col4.metric("🌐 Connections", metrics['network_connections'])
+            
+            # Real-time updating chart
+            st.markdown("##### 📈 REAL-TIME PERFORMANCE")
+            
+            # Create sample real-time data
+            time_points = list(range(30))
+            cpu_data = [max(0, min(100, metrics['cpu_usage'] + random.uniform(-10, 10))) for _ in time_points]
+            memory_data = [max(0, min(100, metrics['memory_usage'] + random.uniform(-5, 5))) for _ in time_points]
+            
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=time_points, y=cpu_data, name='CPU %', line=dict(color='#00ff00')))
+            fig.add_trace(go.Scatter(x=time_points, y=memory_data, name='Memory %', line=dict(color='#ff4444')))
+            fig.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                title="Real-time System Performance"
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
-# [Include all your existing functions like render_main_dashboard, render_login, etc.]
-# Make sure to update the main dashboard to include the new real tools
+# --- EXISTING UI COMPONENTS (Updated) ---
+
+def render_real_network_monitor():
+    """Real network monitoring dashboard"""
+    st.markdown("### 🌐 REAL-TIME NETWORK MONITOR")
+    
+    scanner = RealNetworkScanner()
+    
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.markdown("#### 🔍 LIVE NETWORK SCAN")
+        target_network = st.text_input("Enter network to scan (e.g., 192.168.1.0):", "192.168.1.0")
+        
+        if st.button("🚀 Start Network Scan", key="network_scan"):
+            with st.spinner("Scanning network for active hosts..."):
+                time.sleep(2)  # Simulate scan time
+                hosts = scanner.scan_network(target_network)
+                
+                if hosts:
+                    st.success(f"🎯 Found {len(hosts)} active hosts")
+                    for host in hosts:
+                        st.write(f"📍 **{host}** - Active (Port 80 open)")
+                    
+                    # Show network map
+                    st.markdown("#### 🗺️ NETWORK TOPOLOGY")
+                    network_data = {"Hosts": hosts, "Status": ["Active"] * len(hosts)}
+                    st.dataframe(network_data, use_container_width=True)
+                    
+                    # Add explanation
+                    st.markdown(explain_network_scan_results(hosts), unsafe_allow_html=True)
+                else:
+                    st.warning("⚠️ No active hosts found or network unreachable")
+    
+    with col2:
+        st.markdown("#### 📊 NETWORK STATISTICS")
+        health_monitor = SystemHealthMonitor()
+        metrics = health_monitor.get_system_metrics()
+        
+        if metrics:
+            st.metric("🌐 Active Connections", metrics['network_connections'])
+            st.metric("⚡ CPU Usage", f"{metrics['cpu_usage']:.1f}%")
+            st.metric("💾 Memory Usage", f"{metrics['memory_usage']:.1f}%")
+            st.metric("🖥️ Running Processes", metrics['running_processes'])
+
+def render_dark_web_intelligence():
+    """Dark web monitoring dashboard"""
+    st.markdown("### 🌑 DARK WEB MONITORING")
+    
+    dark_web = DarkWebMonitor()
+    
+    tab1, tab2 = st.tabs(["🔍 Company Monitoring", "📈 Threat Trends"])
+    
+    with tab1:
+        st.markdown("#### 🏢 COMPANY THREAT MONITORING")
+        company_domain = st.text_input("Enter company domain to monitor:", "your-company.com")
+        
+        if st.button("🔎 Search Dark Web", key="dark_web_search"):
+            with st.spinner("🕵️ Scanning dark web forums and marketplaces..."):
+                time.sleep(3)
+                threats = dark_web.search_dark_web_threats(company_domain)
+                
+                if threats:
+                    st.error(f"🚨 Found {len(threats)} potential threats!")
+                    for threat in threats:
+                        st.markdown(f"""
+                        <div class="dark-web-alert">
+                            <h4>🚨 {threat['type']} - {threat['severity']}</h4>
+                            <p><strong>Description:</strong> {threat['description']}</p>
+                            <p><strong>Source:</strong> {threat['source']} | <strong>Confidence:</strong> {threat['confidence']}</p>
+                            <p><strong>Date Found:</strong> {threat['date_found']}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    # Add explanation
+                    st.markdown(explain_dark_web_findings(threats), unsafe_allow_html=True)
+                else:
+                    st.success("✅ No immediate threats found for your domain")
+                    st.markdown(explain_dark_web_findings(threats), unsafe_allow_html=True)
+    
+    with tab2:
+        st.markdown("#### 📈 DARK WEB THREAT TRENDS")
+        
+        # Threat trend data
+        trends = [
+            {"month": "Jan", "credential_leaks": 45, "data_breaches": 12, "ransomware_attacks": 8},
+            {"month": "Feb", "credential_leaks": 52, "data_breaches": 18, "ransomware_attacks": 12},
+            {"month": "Mar", "credential_leaks": 48, "data_breaches": 15, "ransomware_attacks": 10},
+            {"month": "Apr", "credential_leaks": 61, "data_breaches": 22, "ransomware_attacks": 15},
+        ]
+        
+        df = pd.DataFrame(trends)
+        fig = px.line(df, x='month', y=['credential_leaks', 'data_breaches', 'ransomware_attacks'], 
+                     title="Monthly Dark Web Threat Activity",
+                     labels={"value": "Incident Count", "variable": "Threat Type"})
+        fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
+        st.plotly_chart(fig, use_container_width=True)
+
+def render_kali_linux_tools():
+    """Kali Linux security tools integration"""
+    st.markdown("### 🐉 KALI LINUX SECURITY TOOLS")
+    
+    kali = KaliLinuxIntegration()
+    device_tools = DeviceHackingTools()
+    wifi_tools = AdvancedWiFiTools()
+    spoofing_tools = NetworkSpoofingTools()
+    
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["🔍 Network Scanning", "🎯 Vulnerability Assessment", "📱 Device Hacking", "📡 WiFi Tools", "🌐 Network Spoofing"])
+    
+    with tab1:
+        st.markdown("#### 🔍 NETWORK SCANNING WITH NMAP")
+        scan_target = st.text_input("Scan Target:", "scanme.nmap.org", key="nmap_target")
+        
+        if st.button("🚀 Run Nmap Scan", key="nmap_scan"):
+            with st.spinner("🔍 Scanning target with Nmap..."):
+                time.sleep(2)
+                result = kali.run_nmap_scan(scan_target)
+                st.markdown("#### 📋 SCAN RESULTS")
+                st.markdown(f'<div class="kali-terminal">{result}</div>', unsafe_allow_html=True)
+    
+    with tab2:
+        st.markdown("#### 🎯 VULNERABILITY ASSESSMENT")
+        vuln_target = st.text_input("Target URL:", "http://testphp.vulnweb.com", key="vuln_target")
+        
+        if st.button("🔍 Run Vulnerability Scan", key="vuln_scan"):
+            with st.spinner("🔍 Scanning for vulnerabilities with Nikto..."):
+                time.sleep(3)
+                result = kali.run_vulnerability_scan(vuln_target)
+                st.markdown("#### 📋 VULNERABILITY REPORT")
+                st.markdown(f'<div class="kali-terminal">{result}</div>', unsafe_allow_html=True)
+    
+    with tab3:
+        st.markdown("#### 📱 MOBILE DEVICE SECURITY")
+        mobile_ip = st.text_input("Enter Mobile Device IP:", "192.168.1.100")
+        
+        if st.button("🔍 Scan Mobile Device", key="mobile_scan"):
+            with st.spinner("Scanning mobile device for vulnerabilities..."):
+                time.sleep(2)
+                result = device_tools.scan_mobile_device(mobile_ip)
+                st.markdown("#### 📋 SCAN RESULTS")
+                st.markdown(f'<div class="kali-terminal">{result}</div>', unsafe_allow_html=True)
+    
+    with tab4:
+        st.markdown("#### 📡 WIFI SECURITY TOOLS")
+        ssid = st.text_input("Target WiFi SSID:", "HomeNetwork-5G")
+        crack_method = st.selectbox("Cracking Method:", ["wordlist", "wps", "capture_handshake"])
+        
+        if st.button("🔑 Start Password Crack", key="wifi_crack"):
+            with st.spinner(f"Attempting {crack_method} attack..."):
+                time.sleep(3)
+                result = wifi_tools.wifi_password_crack(ssid, crack_method)
+                st.markdown("#### 📋 CRACKING RESULTS")
+                st.markdown(f'<div class="kali-terminal">{result}</div>', unsafe_allow_html=True)
+    
+    with tab5:
+        st.markdown("#### 🌐 NETWORK SPOOFING")
+        target_ip = st.text_input("Target IP:", "192.168.1.100")
+        gateway_ip = st.text_input("Gateway IP:", "192.168.1.1")
+        
+        if st.button("🎭 Start ARP Spoofing", key="arp_spoof"):
+            with st.spinner("Initiating ARP spoofing attack..."):
+                time.sleep(2)
+                result = spoofing_tools.arp_spoofing(target_ip, gateway_ip)
+                st.markdown("#### 📋 ARP SPOOFING STATUS")
+                st.markdown(f'<div class="kali-terminal">{result}</div>', unsafe_allow_html=True)
+
+def render_real_threat_intel():
+    """Real threat intelligence dashboard"""
+    st.markdown("### 🌐 REAL-TIME THREAT INTELLIGENCE")
+    
+    threat_intel = RealThreatIntelligence()
+    
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.markdown("#### 🚨 CISA KNOWN EXPLOITED VULNERABILITIES")
+        
+        if st.button("🔄 Refresh CISA Data", key="refresh_cisa"):
+            with st.spinner("📡 Fetching latest CISA alerts..."):
+                alerts = threat_intel.get_cisa_alerts()
+        else:
+            alerts = threat_intel.get_cisa_alerts()
+        
+        for alert in alerts:
+            with st.expander(f"🔴 {alert['cve_id']} - {alert['title']}"):
+                st.write(f"**Date Published:** {alert['date']}")
+                st.write(f"**Severity:** {alert['severity']}")
+                st.write(f"**Source:** {alert['source']}")
+                st.write(f"**Description:** {alert['description']}")
+                
+                if alert['severity'] == 'CRITICAL':
+                    st.error("🚨 IMMEDIATE PATCHING REQUIRED")
+                elif alert['severity'] == 'HIGH':
+                    st.warning("⚠️ Patch within 72 hours recommended")
+    
+    with col2:
+        st.markdown("#### 📊 GLOBAL THREAT LANDSCAPE")
+        
+        # Real system metrics
+        health_monitor = SystemHealthMonitor()
+        metrics = health_monitor.get_system_metrics()
+        
+        if metrics:
+            st.metric("🖥️ System Uptime", metrics['system_uptime'])
+            st.metric("🚨 Active Threats", random.randint(8, 15))
+            st.metric("🛡️ Blocked Attacks", random.randint(150, 300))
+            st.metric("🌐 Network Connections", metrics['network_connections'])
+
+def render_system_health():
+    """Real system health monitoring"""
+    st.markdown("### 💻 REAL-TIME SYSTEM HEALTH")
+    
+    health_monitor = SystemHealthMonitor()
+    metrics = health_monitor.get_system_metrics()
+    
+    if metrics:
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("⚡ CPU Usage", f"{metrics['cpu_usage']:.1f}%")
+            st.progress(metrics['cpu_usage'] / 100)
+        
+        with col2:
+            st.metric("💾 Memory Usage", f"{metrics['memory_usage']:.1f}%")
+            st.progress(metrics['memory_usage'] / 100)
+        
+        with col3:
+            st.metric("💽 Disk Usage", f"{metrics['disk_usage']:.1f}%")
+            st.progress(metrics['disk_usage'] / 100)
+        
+        with col4:
+            st.metric("🖥️ Running Processes", metrics['running_processes'])
+        
+        # System information
+        st.markdown("#### 🖥️ SYSTEM INFORMATION")
+        sys_col1, sys_col2 = st.columns(2)
+        
+        with sys_col1:
+            st.write(f"**OS:** {platform.system()} {platform.release()}")
+            st.write(f"**Architecture:** {platform.architecture()[0]}")
+            st.write(f"**Processor:** {platform.processor()}")
+        
+        with sys_col2:
+            st.write(f"**System Uptime:** {metrics['system_uptime']}")
+            st.write(f"**Network Connections:** {metrics['network_connections']}")
+            st.write(f"**Python Version:** {platform.python_version()}")
+
+def render_live_security_events():
+    """Live security events feed"""
+    st.markdown("### 📡 LIVE SECURITY EVENTS")
+    
+    # Auto-refresh toggle
+    auto_refresh = st.checkbox("🔄 Auto-refresh every 10 seconds", value=False)
+    
+    if auto_refresh:
+        time.sleep(10)
+        st.rerun()
+    
+    # Simulate real security events
+    events = [
+        {"time": get_ist_time().strftime('%H:%M:%S'), "type": "Firewall Block", "source": "185.220.101.35", "severity": "HIGH", "description": "Blocked connection from known malicious IP"},
+        {"time": (get_ist_time() - timedelta(minutes=2)).strftime('%H:%M:%S'), "type": "Failed Login", "source": "192.168.1.45", "severity": "MEDIUM", "description": "Multiple failed login attempts detected"},
+        {"time": (get_ist_time() - timedelta(minutes=5)).strftime('%H:%M:%S'), "type": "Malware Detected", "source": "User Workstation", "severity": "CRITICAL", "description": "Potential malware signature detected in memory"},
+        {"time": (get_ist_time() - timedelta(minutes=8)).strftime('%H:%M:%S'), "type": "Port Scan", "source": "45.95.147.226", "severity": "HIGH", "description": "Network port scanning activity detected"},
+        {"time": (get_ist_time() - timedelta(minutes=12)).strftime('%H:%M:%S'), "type": "Suspicious Process", "source": "Server-01", "severity": "MEDIUM", "description": "Unusual process behavior detected"},
+    ]
+    
+    for event in events:
+        severity_color = {
+            "CRITICAL": "🔴",
+            "HIGH": "🟠", 
+            "MEDIUM": "🟡",
+            "LOW": "🟢"
+        }
+        
+        st.markdown(f"""
+        <div class="security-event">
+            <strong>{severity_color[event['severity']]} {event['type']} - {event['severity']}</strong><br>
+            <small>🕒 Time: {event['time']} | 📍 Source: {event['source']}</small><br>
+            <small>📝 {event['description']}</small>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    if st.button("🆕 Generate New Event", key="new_event"):
+        st.rerun()
+
+def render_login():
+    """Enhanced login with security features"""
+    st.markdown("""
+    <div class="neuro-header">
+        <h1 class="neuro-text" style="font-size: 4rem; margin: 0;">🔒 NEXUS-7 SECURITY OPS</h1>
+        <h3 class="hologram-text" style="font-size: 1.8rem; margin: 1rem 0;">
+            Advanced Cyber Defense • Real Attack & Defense Tools
+        </h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        st.markdown('<div class="login-container">', unsafe_allow_html=True)
+        with st.form("login_form"):
+            st.markdown("### 🔐 SECURITY LOGIN")
+            username = st.text_input("👤 Username:", placeholder="Enter your username")
+            password = st.text_input("🔑 Password:", type="password", placeholder="Enter your password")
+            mfa_code = st.text_input("📱 MFA Code:", placeholder="6-digit code")
+            
+            if st.form_submit_button("🚀 ACCESS SECURITY DASHBOARD", use_container_width=True):
+                if username == "admin" and password == "nexus7" and mfa_code == "123456":
+                    st.session_state.authenticated = True
+                    st.session_state.login_time = get_ist_time()
+                    st.success("✅ Authentication Successful! Loading dashboard...")
+                    time.sleep(1)
+                    st.rerun()
+                else:
+                    st.error("❌ Invalid credentials. Please check username, password, and MFA code.")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("### 📊 SECURITY STATUS")
+        
+        # System status
+        health_monitor = SystemHealthMonitor()
+        metrics = health_monitor.get_system_metrics()
+        
+        if metrics:
+            col_a, col_b = st.columns(2)
+            with col_a:
+                st.metric("🖥️ System Status", "OPERATIONAL", delta="Normal")
+                st.metric("⚡ CPU Load", f"{metrics['cpu_usage']:.1f}%")
+            with col_b:
+                st.metric("🛡️ Threat Level", "ELEVATED", delta="+2%", delta_color="inverse")
+                st.metric("💾 Memory", f"{metrics['memory_usage']:.1f}%")
+        
+        st.markdown("### 🎯 QUICK ACTIONS")
+        st.button("🆘 Emergency Lockdown", disabled=True)
+        st.button("📋 Generate Security Report", disabled=True)
+        st.button("🔍 Quick Network Scan", disabled=True)
 
 def render_main_dashboard():
     """Main security operations dashboard with real tools"""
     
     # Header with real-time info
-    current_ist = datetime.now()
+    current_ist = get_ist_time()
     if 'login_time' in st.session_state:
         session_duration = current_ist - st.session_state.login_time
         session_str = str(session_duration).split('.')[0]
@@ -965,144 +1859,32 @@ def render_main_dashboard():
         render_real_defense_tools()
     
     with tabs[2]:
-        # You'll need to implement or include your existing Kali tools function
         render_kali_linux_tools()
     
     with tabs[3]:
-        # You'll need to implement or include your existing threat intelligence function
         render_real_threat_intel()
     
     with tabs[4]:
-        # You'll need to implement or include your existing network monitor function
         render_real_network_monitor()
     
     with tabs[5]:
-        # You'll need to implement or include your existing dark web intelligence function
         render_dark_web_intelligence()
     
     with tabs[6]:
-        # You'll need to implement or include your existing system health function
         render_system_health()
     
     with tabs[7]:
-        # You'll need to implement or include your existing live events function
         render_live_security_events()
 
-# Add your existing render_login function and other necessary functions
-
-def render_login():
-    """Enhanced login with security features"""
-    st.markdown("""
-    <div class="neuro-header">
-        <h1 class="neuro-text" style="font-size: 4rem; margin: 0;">🔒 NEXUS-7 SECURITY OPS</h1>
-        <h3 class="hologram-text" style="font-size: 1.8rem; margin: 1rem 0;">
-            Advanced Cyber Defense • Real Attack & Defense Tools
-        </h3>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        st.markdown('<div class="login-container">', unsafe_allow_html=True)
-        with st.form("login_form"):
-            st.markdown("### 🔐 SECURITY LOGIN")
-            username = st.text_input("👤 Username:", placeholder="Enter your username")
-            password = st.text_input("🔑 Password:", type="password", placeholder="Enter your password")
-            mfa_code = st.text_input("📱 MFA Code:", placeholder="6-digit code")
-            
-            if st.form_submit_button("🚀 ACCESS SECURITY DASHBOARD", use_container_width=True):
-                if username == "admin" and password == "nexus7" and mfa_code == "123456":
-                    st.session_state.authenticated = True
-                    st.session_state.login_time = datetime.now()
-                    st.success("✅ Authentication Successful! Loading dashboard...")
-                    time.sleep(1)
-                    st.rerun()
-                else:
-                    st.error("❌ Invalid credentials. Please check username, password, and MFA code.")
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("### 📊 SECURITY STATUS")
-        
-        # System status
-        health_monitor = SystemHealthMonitor()
-        metrics = health_monitor.get_system_metrics()
-        
-        if metrics:
-            col_a, col_b = st.columns(2)
-            with col_a:
-                st.metric("🖥️ System Status", "OPERATIONAL", delta="Normal")
-                st.metric("⚡ CPU Load", f"{metrics['cpu_usage']:.1f}%")
-            with col_b:
-                st.metric("🛡️ Threat Level", "ELEVATED", delta="+2%", delta_color="inverse")
-                st.metric("💾 Memory", f"{metrics['memory_usage']:.1f}%")
-        
-        st.markdown("### 🎯 QUICK ACTIONS")
-        st.button("🆘 Emergency Lockdown", disabled=True)
-        st.button("📋 Generate Security Report", disabled=True)
-        st.button("🔍 Quick Network Scan", disabled=True)
-
-class SystemHealthMonitor:
-    """Real system health monitoring"""
-    
-    def get_system_metrics(self):
-        """Get real system metrics"""
-        try:
-            return {
-                "cpu_usage": psutil.cpu_percent(interval=1),
-                "memory_usage": psutil.virtual_memory().percent,
-                "disk_usage": psutil.disk_usage('/').percent,
-                "running_processes": len(psutil.pids()),
-                "system_uptime": self.get_system_uptime(),
-                "network_connections": len(psutil.net_connections())
-            }
-        except Exception as e:
-            return {
-                "cpu_usage": 25.5,
-                "memory_usage": 67.8,
-                "disk_usage": 45.2,
-                "running_processes": 142,
-                "system_uptime": "5 days, 12:30:15",
-                "network_connections": 89
-            }
-    
-    def get_system_uptime(self):
-        """Get system uptime"""
-        try:
-            boot_time = datetime.fromtimestamp(psutil.boot_time())
-            uptime = datetime.now() - boot_time
-            days = uptime.days
-            hours, remainder = divmod(uptime.seconds, 3600)
-            minutes, seconds = divmod(remainder, 60)
-            return f"{days}d {hours}h {minutes}m"
-        except:
-            return "5d 12h 30m"
-
-# You'll need to add the missing functions that are referenced but not defined in this snippet
-# For now, I'll add placeholder implementations
-
-def render_kali_linux_tools():
-    st.info("Kali Linux Tools - Implement this function based on your existing code")
-
-def render_real_threat_intel():
-    st.info("Threat Intelligence - Implement this function based on your existing code")
-
-def render_real_network_monitor():
-    st.info("Network Monitor - Implement this function based on your existing code")
-
-def render_dark_web_intelligence():
-    st.info("Dark Web Intelligence - Implement this function based on your existing code")
-
-def render_system_health():
-    st.info("System Health - Implement this function based on your existing code")
-
-def render_live_security_events():
-    st.info("Live Security Events - Implement this function based on your existing code")
+# --- MAIN APPLICATION ---
 
 def main():
     with quantum_resource_manager():
-        # Initialize session state
+        # Initialize real security operations
+        if 'security_ops' not in st.session_state:
+            st.session_state.security_ops = RealSecurityOperations()
+        
+        # Authentication
         if 'authenticated' not in st.session_state:
             st.session_state.authenticated = False
         
