@@ -1399,10 +1399,10 @@ def render_real_network_monitor():
         metrics = health_monitor.get_system_metrics()
         
         if metrics:
-            st.metric("🌐 Active Connections", metrics['network_connections'], key="network_monitor_connections")
-            st.metric("⚡ CPU Usage", f"{metrics['cpu_usage']:.1f}%", key="network_monitor_cpu")
-            st.metric("💾 Memory Usage", f"{metrics['memory_usage']:.1f}%", key="network_monitor_memory")
-            st.metric("🖥️ Running Processes", metrics['running_processes'], key="network_monitor_processes")
+            st.metric("🌐 Active Connections", metrics['network_connections'])
+            st.metric("⚡ CPU Usage", f"{metrics['cpu_usage']:.1f}%")
+            st.metric("💾 Memory Usage", f"{metrics['memory_usage']:.1f}%")
+            st.metric("🖥️ Running Processes", metrics['running_processes'])
 
 def render_dark_web_intelligence():
     """Dark web monitoring dashboard"""
@@ -1558,10 +1558,10 @@ def render_real_threat_intel():
         metrics = health_monitor.get_system_metrics()
         
         if metrics:
-            st.metric("🖥️ System Uptime", metrics['system_uptime'], key="threat_intel_uptime")
-            st.metric("🚨 Active Threats", random.randint(8, 15), key="threat_intel_threats")
-            st.metric("🛡️ Blocked Attacks", random.randint(150, 300), key="threat_intel_blocked")
-            st.metric("🌐 Network Connections", metrics['network_connections'], key="threat_intel_connections")
+            st.metric("🖥️ System Uptime", metrics['system_uptime'])
+            st.metric("🚨 Active Threats", random.randint(8, 15))
+            st.metric("🛡️ Blocked Attacks", random.randint(150, 300))
+            st.metric("🌐 Network Connections", metrics['network_connections'])
 
 def render_system_health():
     """Real system health monitoring"""
@@ -1574,19 +1574,19 @@ def render_system_health():
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("⚡ CPU Usage", f"{metrics['cpu_usage']:.1f}%", key="system_health_cpu")
+            st.metric("⚡ CPU Usage", f"{metrics['cpu_usage']:.1f}%")
             st.progress(metrics['cpu_usage'] / 100)
         
         with col2:
-            st.metric("💾 Memory Usage", f"{metrics['memory_usage']:.1f}%", key="system_health_memory")
+            st.metric("💾 Memory Usage", f"{metrics['memory_usage']:.1f}%")
             st.progress(metrics['memory_usage'] / 100)
         
         with col3:
-            st.metric("💽 Disk Usage", f"{metrics['disk_usage']:.1f}%", key="system_health_disk")
+            st.metric("💽 Disk Usage", f"{metrics['disk_usage']:.1f}%")
             st.progress(metrics['disk_usage'] / 100)
         
         with col4:
-            st.metric("🖥️ Running Processes", metrics['running_processes'], key="system_health_processes")
+            st.metric("🖥️ Running Processes", metrics['running_processes'])
         
         # System information
         st.markdown("#### 🖥️ SYSTEM INFORMATION")
@@ -1683,11 +1683,11 @@ def render_login():
         if metrics:
             col_a, col_b = st.columns(2)
             with col_a:
-                st.metric("🖥️ System Status", "OPERATIONAL", delta="Normal", key="login_status")
-                st.metric("⚡ CPU Load", f"{metrics['cpu_usage']:.1f}%", key="login_cpu")
+                st.metric("🖥️ System Status", "OPERATIONAL", delta="Normal")
+                st.metric("⚡ CPU Load", f"{metrics['cpu_usage']:.1f}%")
             with col_b:
-                st.metric("🛡️ Threat Level", "ELEVATED", delta="+2%", delta_color="inverse", key="login_threat")
-                st.metric("💾 Memory", f"{metrics['memory_usage']:.1f}%", key="login_memory")
+                st.metric("🛡️ Threat Level", "ELEVATED", delta="+2%", delta_color="inverse")
+                st.metric("💾 Memory", f"{metrics['memory_usage']:.1f}%")
         
         st.markdown("### 🎯 QUICK ACTIONS")
         st.button("🆘 Emergency Lockdown", disabled=True, key="login_lockdown")
