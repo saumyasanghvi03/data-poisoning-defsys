@@ -238,90 +238,6 @@ def quantum_resource_manager():
     finally:
         gc.collect()
 
-# --- EXPLANATION FUNCTIONS ---
-
-def explain_network_scan_results(hosts):
-    """Explain network scan results to user"""
-    explanation = f"""
-    <div class="explanation-box">
-        <div class="explanation-title">📊 NETWORK SCAN EXPLANATION</div>
-        <p><strong>What this means:</strong> We scanned your network and found <strong>{len(hosts)} active devices</strong>. Each device represents a computer, server, or IoT device connected to your network.</p>
-        
-        <p><strong>Key findings:</strong></p>
-        <ul>
-            <li>🟢 <strong>Active hosts</strong> are devices currently online and responding</li>
-            <li>🔍 <strong>Port 80 open</strong> means these devices are running web services</li>
-            <li>🌐 Each IP address represents a unique device on your network</li>
-        </ul>
-        
-        <p><strong>What you should do:</strong></p>
-        <ul>
-            <li>✅ Verify all detected devices are authorized</li>
-            <li>🔒 Check for unknown devices that shouldn't be on your network</li>
-            <li>📋 Maintain an inventory of all approved devices</li>
-            <li>🚨 Investigate any unfamiliar IP addresses immediately</li>
-        </ul>
-        
-        <p><strong>Technical details:</strong> This scan uses TCP connection attempts to port 80 to identify active hosts. Devices that respond are considered 'alive' and part of your network infrastructure.</p>
-    </div>
-    """
-    return explanation
-
-def explain_dark_web_findings(threats):
-    """Explain dark web monitoring results"""
-    if not threats:
-        explanation = """
-        <div class="explanation-box">
-            <div class="explanation-title">✅ NO THREATS DETECTED</div>
-            <p><strong>Good news!</strong> Our dark web monitoring didn't find any immediate threats targeting your organization.</p>
-            
-            <p><strong>What this means:</strong></p>
-            <ul>
-                <li>🟢 Your company credentials aren't currently being traded on dark web markets</li>
-                <li>🔒 No discussions about attacking your organization were found</li>
-                <li>🛡️ Your digital footprint appears clean on monitored underground forums</li>
-            </ul>
-            
-            <p><strong>Maintenance recommendations:</strong></p>
-            <ul>
-                <li>Continue regular dark web monitoring (weekly recommended)</li>
-                <li>Maintain strong password policies and MFA</li>
-                <li>Educate employees about phishing prevention</li>
-                <li>Keep all systems patched and updated</li>
-            </ul>
-        </div>
-        """
-    else:
-        explanation = f"""
-        <div class="explanation-box">
-            <div class="explanation-title">🚨 DARK WEB THREAT ANALYSIS</div>
-            <p><strong>Critical findings:</strong> We detected <strong>{len(threats)} active threats</strong> targeting your organization on dark web platforms.</p>
-            
-            <p><strong>Threat breakdown:</strong></p>
-            <ul>
-        """
-        
-        for threat in threats:
-            explanation += f'<li>🔴 <strong>{threat["type"]}</strong> - {threat["description"]} (Confidence: {threat["confidence"]})</li>'
-        
-        explanation += """
-            </ul>
-            
-            <p><strong>Immediate actions required:</strong></p>
-            <ul>
-                <li>🔄 <strong>Password reset</strong> for all employee accounts</li>
-                <li>🔐 <strong>Enable MFA</strong> immediately if not already active</li>
-                <li>📧 <strong>Security awareness training</strong> about credential phishing</li>
-                <li>👨‍💼 <strong>Notify security team</strong> for incident response</li>
-                <li>📞 <strong>Contact law enforcement</strong> if sensitive data is involved</li>
-            </ul>
-            
-            <p><strong>About dark web monitoring:</strong> We scan underground forums, hacker marketplaces, and leak sites where cybercriminals trade stolen data and plan attacks. Early detection allows proactive defense.</p>
-        </div>
-        """
-    
-    return explanation
-
 # --- REAL SECURITY IMPLEMENTATIONS (No external dependencies) ---
 
 class RealNetworkAttacks:
@@ -1145,10 +1061,10 @@ def render_real_attack_tools():
         
         with col1:
             st.markdown("##### Port Scanning")
-            scan_target = st.text_input("Target IP/Hostname:", "scanme.nmap.org", key="real_scan_target")
-            scan_ports = st.text_input("Port Range:", "1-1000", key="real_scan_ports")
+            scan_target = st.text_input("Target IP/Hostname:", "scanme.nmap.org", key="real_attack_port_scan_target")
+            scan_ports = st.text_input("Port Range:", "1-1000", key="real_attack_port_scan_ports")
             
-            if st.button("🚀 Run Port Scan", key="real_port_scan"):
+            if st.button("🚀 Run Port Scan", key="real_attack_port_scan_btn"):
                 with st.spinner("Scanning ports..."):
                     results = attack_tools.port_scan(scan_target, scan_ports)
                     if results:
@@ -1160,9 +1076,9 @@ def render_real_attack_tools():
         
         with col2:
             st.markdown("##### ARP Scanning")
-            network_range = st.text_input("Network Range:", "192.168.1.0/24", key="arp_scan_range")
+            network_range = st.text_input("Network Range:", "192.168.1.0/24", key="real_attack_arp_scan_range")
             
-            if st.button("🔍 ARP Network Discovery", key="arp_scan"):
+            if st.button("🔍 ARP Network Discovery", key="real_attack_arp_scan_btn"):
                 with st.spinner("Discovering hosts..."):
                     results = attack_tools.perform_arp_scan(network_range)
                     if results:
@@ -1173,10 +1089,10 @@ def render_real_attack_tools():
                         st.warning("No hosts found or scan failed")
             
             st.markdown("##### DoS Attack Simulation")
-            dos_target = st.text_input("Target IP:", "192.168.1.1", key="dos_target")
-            dos_port = st.number_input("Target Port:", min_value=1, max_value=65535, value=80, key="dos_port")
+            dos_target = st.text_input("Target IP:", "192.168.1.1", key="real_attack_dos_target")
+            dos_port = st.number_input("Target Port:", min_value=1, max_value=65535, value=80, key="real_attack_dos_port")
             
-            if st.button("🌊 SYN Flood Attack", key="syn_flood"):
+            if st.button("🌊 SYN Flood Attack", key="real_attack_syn_flood_btn"):
                 with st.spinner("Launching SYN flood..."):
                     result = attack_tools.syn_flood_attack(dos_target, dos_port, 50)
                     st.code(result)
@@ -1184,7 +1100,7 @@ def render_real_attack_tools():
     with tab2:
         st.markdown("#### 📡 WIRELESS ATTACK TOOLS")
         
-        if st.button("📶 Scan Wireless Networks", key="wifi_scan"):
+        if st.button("📶 Scan Wireless Networks", key="real_attack_wifi_scan_btn"):
             with st.spinner("Scanning for wireless networks..."):
                 networks = wireless_tools.scan_wireless_networks()
                 if networks:
@@ -1197,17 +1113,17 @@ def render_real_attack_tools():
                             st.write(f"**Connected Clients:** {network['clients']}")
                             
                             if network['encryption'] != 'OPEN':
-                                if st.button(f"Capture Handshake", key=f"handshake_{network['bssid']}"):
+                                if st.button(f"Capture Handshake", key=f"real_attack_handshake_{network['bssid']}"):
                                     result = wireless_tools.capture_handshake(network['bssid'], network['channel'])
                                     st.code(result)
     
     with tab3:
         st.markdown("#### 🎯 VULNERABILITY SCANNING")
         
-        vuln_target = st.text_input("Scan Target:", "example.com", key="vuln_target")
-        scan_type = st.selectbox("Scan Type:", ["Web Vulnerabilities", "Network Vulnerabilities"], key="scan_type")
+        vuln_target = st.text_input("Scan Target:", "example.com", key="real_attack_vuln_target")
+        scan_type = st.selectbox("Scan Type:", ["Web Vulnerabilities", "Network Vulnerabilities"], key="real_attack_scan_type")
         
-        if st.button("🔍 Run Vulnerability Scan", key="vuln_scan"):
+        if st.button("🔍 Run Vulnerability Scan", key="real_attack_vuln_scan_btn"):
             with st.spinner("Scanning for vulnerabilities..."):
                 if scan_type == "Web Vulnerabilities":
                     vulnerabilities = vuln_scanner.web_vulnerability_scan(vuln_target)
@@ -1243,7 +1159,7 @@ def render_real_attack_tools():
         
         with col1:
             st.markdown("##### Traffic Analysis")
-            if st.button("📊 Analyze Network Traffic", key="traffic_analysis"):
+            if st.button("📊 Analyze Network Traffic", key="real_attack_traffic_analysis_btn"):
                 with st.spinner("Capturing and analyzing traffic..."):
                     packets = network_analysis.analyze_traffic(count=50)
                     if packets:
@@ -1258,9 +1174,9 @@ def render_real_attack_tools():
         
         with col2:
             st.markdown("##### DNS Enumeration")
-            domain = st.text_input("Domain to enumerate:", "google.com", key="dns_domain")
+            domain = st.text_input("Domain to enumerate:", "google.com", key="real_attack_dns_domain")
             
-            if st.button("🔍 DNS Enumeration", key="dns_enum"):
+            if st.button("🔍 DNS Enumeration", key="real_attack_dns_enum_btn"):
                 with st.spinner("Performing DNS enumeration..."):
                     results = network_analysis.dns_enumeration(domain)
                     if results:
@@ -1288,14 +1204,14 @@ def render_real_defense_tools():
         
         with col1:
             st.markdown("##### Firewall Management")
-            block_ip = st.text_input("IP to block:", "192.168.1.100", key="block_ip")
+            block_ip = st.text_input("IP to block:", "192.168.1.100", key="real_defense_block_ip")
             
-            if st.button("🚫 Block IP", key="block_ip_btn"):
+            if st.button("🚫 Block IP", key="real_defense_block_ip_btn"):
                 result = defense_tools.firewall_block_ip(block_ip)
                 st.success(result)
             
             st.markdown("##### Suspicious Activity Monitoring")
-            if st.button("👀 Monitor Activity", key="monitor_activity"):
+            if st.button("👀 Monitor Activity", key="real_defense_monitor_activity_btn"):
                 with st.spinner("Scanning for suspicious activity..."):
                     suspicious = defense_tools.monitor_suspicious_activity()
                     if suspicious:
@@ -1309,7 +1225,7 @@ def render_real_defense_tools():
             st.markdown("##### System Isolation")
             st.warning("This will disconnect the system from the network")
             
-            if st.button("🔒 Isolate System", key="isolate_system"):
+            if st.button("🔒 Isolate System", key="real_defense_isolate_system_btn"):
                 result = incident_response.isolate_system()
                 st.success(result)
     
@@ -1320,16 +1236,16 @@ def render_real_defense_tools():
         
         with col1:
             st.markdown("##### File Encryption")
-            uploaded_file = st.file_uploader("Choose file to encrypt", type=['txt', 'pdf', 'docx'], key="encrypt_file")
+            uploaded_file = st.file_uploader("Choose file to encrypt", type=['txt', 'pdf', 'docx'], key="real_defense_encrypt_file")
             
             if uploaded_file is not None:
                 # Generate key
                 if 'enc_key' not in st.session_state:
                     st.session_state.enc_key = crypto_tools.generate_key()
                 
-                st.text_input("Encryption Key:", value=st.session_state.enc_key.decode(), disabled=True, key="enc_key_display")
+                st.text_input("Encryption Key:", value=st.session_state.enc_key.decode(), disabled=True, key="real_defense_enc_key_display")
                 
-                if st.button("🔐 Encrypt File", key="encrypt_file_btn"):
+                if st.button("🔐 Encrypt File", key="real_defense_encrypt_file_btn"):
                     try:
                         encrypted_content = defense_tools.encrypt_file(uploaded_file.getvalue(), st.session_state.enc_key)
                         st.success("✅ File encrypted successfully!")
@@ -1339,18 +1255,19 @@ def render_real_defense_tools():
                             label="📥 Download Encrypted File",
                             data=encrypted_content,
                             file_name=f"encrypted_{uploaded_file.name}",
-                            mime="application/octet-stream"
+                            mime="application/octet-stream",
+                            key="real_defense_encrypt_download_btn"
                         )
                     except Exception as e:
                         st.error(f"Encryption failed: {e}")
         
         with col2:
             st.markdown("##### File Decryption")
-            encrypted_file = st.file_uploader("Choose file to decrypt", type=['encrypted'], key="decrypt_file")
-            dec_key = st.text_input("Decryption Key:", value=st.session_state.get('enc_key', b'').decode(), key="dec_key")
+            encrypted_file = st.file_uploader("Choose file to decrypt", type=['encrypted'], key="real_defense_decrypt_file")
+            dec_key = st.text_input("Decryption Key:", value=st.session_state.get('enc_key', b'').decode(), key="real_defense_dec_key")
             
             if encrypted_file is not None and dec_key:
-                if st.button("🔓 Decrypt File", key="decrypt_file_btn"):
+                if st.button("🔓 Decrypt File", key="real_defense_decrypt_file_btn"):
                     try:
                         decrypted_content = defense_tools.decrypt_file(encrypted_file.getvalue(), dec_key.encode())
                         st.success("✅ File decrypted successfully!")
@@ -1360,19 +1277,20 @@ def render_real_defense_tools():
                             label="📥 Download Decrypted File",
                             data=decrypted_content,
                             file_name=f"decrypted_{encrypted_file.name.replace('.encrypted', '')}",
-                            mime="application/octet-stream"
+                            mime="application/octet-stream",
+                            key="real_defense_decrypt_download_btn"
                         )
                     except Exception as e:
                         st.error(f"Decryption failed: {e}")
             
             st.markdown("##### Password Hashing")
-            password = st.text_input("Password to hash:", type="password", key="hash_pwd")
+            password = st.text_input("Password to hash:", type="password", key="real_defense_hash_pwd")
             if password:
                 hashed = crypto_tools.hash_password(password)
-                st.text_input("Hashed Password:", value=hashed, disabled=True, key="hashed_display")
+                st.text_input("Hashed Password:", value=hashed, disabled=True, key="real_defense_hashed_display")
                 
                 # Verify password
-                verify_pwd = st.text_input("Verify password:", type="password", key="verify_pwd")
+                verify_pwd = st.text_input("Verify password:", type="password", key="real_defense_verify_pwd")
                 if verify_pwd:
                     is_valid = crypto_tools.verify_password(verify_pwd, hashed)
                     if is_valid:
@@ -1383,7 +1301,7 @@ def render_real_defense_tools():
     with tab3:
         st.markdown("#### 🔍 INCIDENT RESPONSE")
         
-        if st.button("🕵️ Collect Forensic Data", key="collect_forensics"):
+        if st.button("🕵️ Collect Forensic Data", key="real_defense_collect_forensics_btn"):
             with st.spinner("Collecting system forensic data..."):
                 forensic_data = incident_response.collect_forensic_data()
                 
@@ -1444,7 +1362,7 @@ def render_real_defense_tools():
             )
             st.plotly_chart(fig, use_container_width=True)
 
-# --- EXISTING UI COMPONENTS (Updated) ---
+# --- EXISTING UI COMPONENTS (Updated with unique keys) ---
 
 def render_real_network_monitor():
     """Real network monitoring dashboard"""
@@ -1456,9 +1374,9 @@ def render_real_network_monitor():
     
     with col1:
         st.markdown("#### 🔍 LIVE NETWORK SCAN")
-        target_network = st.text_input("Enter network to scan (e.g., 192.168.1.0):", "192.168.1.0")
+        target_network = st.text_input("Enter network to scan (e.g., 192.168.1.0):", "192.168.1.0", key="network_monitor_target")
         
-        if st.button("🚀 Start Network Scan", key="network_scan"):
+        if st.button("🚀 Start Network Scan", key="network_monitor_scan_btn"):
             with st.spinner("Scanning network for active hosts..."):
                 time.sleep(2)  # Simulate scan time
                 hosts = scanner.scan_network(target_network)
@@ -1472,9 +1390,6 @@ def render_real_network_monitor():
                     st.markdown("#### 🗺️ NETWORK TOPOLOGY")
                     network_data = {"Hosts": hosts, "Status": ["Active"] * len(hosts)}
                     st.dataframe(network_data, use_container_width=True)
-                    
-                    # Add explanation
-                    st.markdown(explain_network_scan_results(hosts), unsafe_allow_html=True)
                 else:
                     st.warning("⚠️ No active hosts found or network unreachable")
     
@@ -1484,10 +1399,10 @@ def render_real_network_monitor():
         metrics = health_monitor.get_system_metrics()
         
         if metrics:
-            st.metric("🌐 Active Connections", metrics['network_connections'])
-            st.metric("⚡ CPU Usage", f"{metrics['cpu_usage']:.1f}%")
-            st.metric("💾 Memory Usage", f"{metrics['memory_usage']:.1f}%")
-            st.metric("🖥️ Running Processes", metrics['running_processes'])
+            st.metric("🌐 Active Connections", metrics['network_connections'], key="network_monitor_connections")
+            st.metric("⚡ CPU Usage", f"{metrics['cpu_usage']:.1f}%", key="network_monitor_cpu")
+            st.metric("💾 Memory Usage", f"{metrics['memory_usage']:.1f}%", key="network_monitor_memory")
+            st.metric("🖥️ Running Processes", metrics['running_processes'], key="network_monitor_processes")
 
 def render_dark_web_intelligence():
     """Dark web monitoring dashboard"""
@@ -1499,9 +1414,9 @@ def render_dark_web_intelligence():
     
     with tab1:
         st.markdown("#### 🏢 COMPANY THREAT MONITORING")
-        company_domain = st.text_input("Enter company domain to monitor:", "your-company.com")
+        company_domain = st.text_input("Enter company domain to monitor:", "your-company.com", key="dark_web_company_domain")
         
-        if st.button("🔎 Search Dark Web", key="dark_web_search"):
+        if st.button("🔎 Search Dark Web", key="dark_web_search_btn"):
             with st.spinner("🕵️ Scanning dark web forums and marketplaces..."):
                 time.sleep(3)
                 threats = dark_web.search_dark_web_threats(company_domain)
@@ -1517,12 +1432,8 @@ def render_dark_web_intelligence():
                             <p><strong>Date Found:</strong> {threat['date_found']}</p>
                         </div>
                         """, unsafe_allow_html=True)
-                    
-                    # Add explanation
-                    st.markdown(explain_dark_web_findings(threats), unsafe_allow_html=True)
                 else:
                     st.success("✅ No immediate threats found for your domain")
-                    st.markdown(explain_dark_web_findings(threats), unsafe_allow_html=True)
     
     with tab2:
         st.markdown("#### 📈 DARK WEB THREAT TRENDS")
@@ -1555,9 +1466,9 @@ def render_kali_linux_tools():
     
     with tab1:
         st.markdown("#### 🔍 NETWORK SCANNING WITH NMAP")
-        scan_target = st.text_input("Scan Target:", "scanme.nmap.org", key="nmap_target")
+        scan_target = st.text_input("Scan Target:", "scanme.nmap.org", key="kali_nmap_target")
         
-        if st.button("🚀 Run Nmap Scan", key="nmap_scan"):
+        if st.button("🚀 Run Nmap Scan", key="kali_nmap_scan_btn"):
             with st.spinner("🔍 Scanning target with Nmap..."):
                 time.sleep(2)
                 result = kali.run_nmap_scan(scan_target)
@@ -1566,9 +1477,9 @@ def render_kali_linux_tools():
     
     with tab2:
         st.markdown("#### 🎯 VULNERABILITY ASSESSMENT")
-        vuln_target = st.text_input("Target URL:", "http://testphp.vulnweb.com", key="vuln_target")
+        vuln_target = st.text_input("Target URL:", "http://testphp.vulnweb.com", key="kali_vuln_target")
         
-        if st.button("🔍 Run Vulnerability Scan", key="vuln_scan"):
+        if st.button("🔍 Run Vulnerability Scan", key="kali_vuln_scan_btn"):
             with st.spinner("🔍 Scanning for vulnerabilities with Nikto..."):
                 time.sleep(3)
                 result = kali.run_vulnerability_scan(vuln_target)
@@ -1577,9 +1488,9 @@ def render_kali_linux_tools():
     
     with tab3:
         st.markdown("#### 📱 MOBILE DEVICE SECURITY")
-        mobile_ip = st.text_input("Enter Mobile Device IP:", "192.168.1.100")
+        mobile_ip = st.text_input("Enter Mobile Device IP:", "192.168.1.100", key="kali_mobile_ip")
         
-        if st.button("🔍 Scan Mobile Device", key="mobile_scan"):
+        if st.button("🔍 Scan Mobile Device", key="kali_mobile_scan_btn"):
             with st.spinner("Scanning mobile device for vulnerabilities..."):
                 time.sleep(2)
                 result = device_tools.scan_mobile_device(mobile_ip)
@@ -1588,10 +1499,10 @@ def render_kali_linux_tools():
     
     with tab4:
         st.markdown("#### 📡 WIFI SECURITY TOOLS")
-        ssid = st.text_input("Target WiFi SSID:", "HomeNetwork-5G")
-        crack_method = st.selectbox("Cracking Method:", ["wordlist", "wps", "capture_handshake"])
+        ssid = st.text_input("Target WiFi SSID:", "HomeNetwork-5G", key="kali_wifi_ssid")
+        crack_method = st.selectbox("Cracking Method:", ["wordlist", "wps", "capture_handshake"], key="kali_wifi_method")
         
-        if st.button("🔑 Start Password Crack", key="wifi_crack"):
+        if st.button("🔑 Start Password Crack", key="kali_wifi_crack_btn"):
             with st.spinner(f"Attempting {crack_method} attack..."):
                 time.sleep(3)
                 result = wifi_tools.wifi_password_crack(ssid, crack_method)
@@ -1600,10 +1511,10 @@ def render_kali_linux_tools():
     
     with tab5:
         st.markdown("#### 🌐 NETWORK SPOOFING")
-        target_ip = st.text_input("Target IP:", "192.168.1.100")
-        gateway_ip = st.text_input("Gateway IP:", "192.168.1.1")
+        target_ip = st.text_input("Target IP:", "192.168.1.100", key="kali_spoof_target_ip")
+        gateway_ip = st.text_input("Gateway IP:", "192.168.1.1", key="kali_spoof_gateway_ip")
         
-        if st.button("🎭 Start ARP Spoofing", key="arp_spoof"):
+        if st.button("🎭 Start ARP Spoofing", key="kali_arp_spoof_btn"):
             with st.spinner("Initiating ARP spoofing attack..."):
                 time.sleep(2)
                 result = spoofing_tools.arp_spoofing(target_ip, gateway_ip)
@@ -1621,7 +1532,7 @@ def render_real_threat_intel():
     with col1:
         st.markdown("#### 🚨 CISA KNOWN EXPLOITED VULNERABILITIES")
         
-        if st.button("🔄 Refresh CISA Data", key="refresh_cisa"):
+        if st.button("🔄 Refresh CISA Data", key="threat_intel_refresh_btn"):
             with st.spinner("📡 Fetching latest CISA alerts..."):
                 alerts = threat_intel.get_cisa_alerts()
         else:
@@ -1647,10 +1558,10 @@ def render_real_threat_intel():
         metrics = health_monitor.get_system_metrics()
         
         if metrics:
-            st.metric("🖥️ System Uptime", metrics['system_uptime'])
-            st.metric("🚨 Active Threats", random.randint(8, 15))
-            st.metric("🛡️ Blocked Attacks", random.randint(150, 300))
-            st.metric("🌐 Network Connections", metrics['network_connections'])
+            st.metric("🖥️ System Uptime", metrics['system_uptime'], key="threat_intel_uptime")
+            st.metric("🚨 Active Threats", random.randint(8, 15), key="threat_intel_threats")
+            st.metric("🛡️ Blocked Attacks", random.randint(150, 300), key="threat_intel_blocked")
+            st.metric("🌐 Network Connections", metrics['network_connections'], key="threat_intel_connections")
 
 def render_system_health():
     """Real system health monitoring"""
@@ -1663,19 +1574,19 @@ def render_system_health():
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("⚡ CPU Usage", f"{metrics['cpu_usage']:.1f}%")
+            st.metric("⚡ CPU Usage", f"{metrics['cpu_usage']:.1f}%", key="system_health_cpu")
             st.progress(metrics['cpu_usage'] / 100)
         
         with col2:
-            st.metric("💾 Memory Usage", f"{metrics['memory_usage']:.1f}%")
+            st.metric("💾 Memory Usage", f"{metrics['memory_usage']:.1f}%", key="system_health_memory")
             st.progress(metrics['memory_usage'] / 100)
         
         with col3:
-            st.metric("💽 Disk Usage", f"{metrics['disk_usage']:.1f}%")
+            st.metric("💽 Disk Usage", f"{metrics['disk_usage']:.1f}%", key="system_health_disk")
             st.progress(metrics['disk_usage'] / 100)
         
         with col4:
-            st.metric("🖥️ Running Processes", metrics['running_processes'])
+            st.metric("🖥️ Running Processes", metrics['running_processes'], key="system_health_processes")
         
         # System information
         st.markdown("#### 🖥️ SYSTEM INFORMATION")
@@ -1696,7 +1607,7 @@ def render_live_security_events():
     st.markdown("### 📡 LIVE SECURITY EVENTS")
     
     # Auto-refresh toggle
-    auto_refresh = st.checkbox("🔄 Auto-refresh every 10 seconds", value=False)
+    auto_refresh = st.checkbox("🔄 Auto-refresh every 10 seconds", value=False, key="live_events_auto_refresh")
     
     if auto_refresh:
         time.sleep(10)
@@ -1727,7 +1638,7 @@ def render_live_security_events():
         </div>
         """, unsafe_allow_html=True)
     
-    if st.button("🆕 Generate New Event", key="new_event"):
+    if st.button("🆕 Generate New Event", key="live_events_new_event_btn"):
         st.rerun()
 
 def render_login():
@@ -1747,11 +1658,11 @@ def render_login():
         st.markdown('<div class="login-container">', unsafe_allow_html=True)
         with st.form("login_form"):
             st.markdown("### 🔐 SECURITY LOGIN")
-            username = st.text_input("👤 Username:", placeholder="Enter your username")
-            password = st.text_input("🔑 Password:", type="password", placeholder="Enter your password")
-            mfa_code = st.text_input("📱 MFA Code:", placeholder="6-digit code")
+            username = st.text_input("👤 Username:", placeholder="Enter your username", key="login_username")
+            password = st.text_input("🔑 Password:", type="password", placeholder="Enter your password", key="login_password")
+            mfa_code = st.text_input("📱 MFA Code:", placeholder="6-digit code", key="login_mfa")
             
-            if st.form_submit_button("🚀 ACCESS SECURITY DASHBOARD", use_container_width=True):
+            if st.form_submit_button("🚀 ACCESS SECURITY DASHBOARD", use_container_width=True, key="login_submit_btn"):
                 if username == "admin" and password == "nexus7" and mfa_code == "123456":
                     st.session_state.authenticated = True
                     st.session_state.login_time = get_ist_time()
@@ -1772,16 +1683,16 @@ def render_login():
         if metrics:
             col_a, col_b = st.columns(2)
             with col_a:
-                st.metric("🖥️ System Status", "OPERATIONAL", delta="Normal")
-                st.metric("⚡ CPU Load", f"{metrics['cpu_usage']:.1f}%")
+                st.metric("🖥️ System Status", "OPERATIONAL", delta="Normal", key="login_status")
+                st.metric("⚡ CPU Load", f"{metrics['cpu_usage']:.1f}%", key="login_cpu")
             with col_b:
-                st.metric("🛡️ Threat Level", "ELEVATED", delta="+2%", delta_color="inverse")
-                st.metric("💾 Memory", f"{metrics['memory_usage']:.1f}%")
+                st.metric("🛡️ Threat Level", "ELEVATED", delta="+2%", delta_color="inverse", key="login_threat")
+                st.metric("💾 Memory", f"{metrics['memory_usage']:.1f}%", key="login_memory")
         
         st.markdown("### 🎯 QUICK ACTIONS")
-        st.button("🆘 Emergency Lockdown", disabled=True)
-        st.button("📋 Generate Security Report", disabled=True)
-        st.button("🔍 Quick Network Scan", disabled=True)
+        st.button("🆘 Emergency Lockdown", disabled=True, key="login_lockdown")
+        st.button("📋 Generate Security Report", disabled=True, key="login_report")
+        st.button("🔍 Quick Network Scan", disabled=True, key="login_scan")
 
 def render_main_dashboard():
     """Main security operations dashboard with real tools"""
@@ -1813,27 +1724,27 @@ def render_main_dashboard():
     cols = st.columns(6)
     
     with cols[0]:
-        if st.button("⚔️ Real Attacks", use_container_width=True, key="quick_attacks"):
+        if st.button("⚔️ Real Attacks", use_container_width=True, key="main_quick_attacks"):
             st.session_state.current_tab = "Real Attack Tools"
     
     with cols[1]:
-        if st.button("🛡️ Real Defense", use_container_width=True, key="quick_defense"):
+        if st.button("🛡️ Real Defense", use_container_width=True, key="main_quick_defense"):
             st.session_state.current_tab = "Real Defense Tools"
     
     with cols[2]:
-        if st.button("🔍 Network Scan", use_container_width=True, key="quick_network"):
+        if st.button("🔍 Network Scan", use_container_width=True, key="main_quick_network"):
             st.session_state.current_tab = "Network Monitor"
     
     with cols[3]:
-        if st.button("🌑 Dark Web", use_container_width=True, key="quick_darkweb"):
+        if st.button("🌑 Dark Web", use_container_width=True, key="main_quick_darkweb"):
             st.session_state.current_tab = "Dark Web Intel"
     
     with cols[4]:
-        if st.button("🐉 Kali Tools", use_container_width=True, key="quick_kali"):
+        if st.button("🐉 Kali Tools", use_container_width=True, key="main_quick_kali"):
             st.session_state.current_tab = "Kali Linux Tools"
     
     with cols[5]:
-        if st.button("🔒 Logout", use_container_width=True, key="quick_logout"):
+        if st.button("🔒 Logout", use_container_width=True, key="main_quick_logout"):
             st.session_state.authenticated = False
             st.rerun()
     
