@@ -6,8 +6,6 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import random
 import time
-import folium
-from streamlit_folium import folium_static
 import gc
 import resource
 from contextlib import contextmanager
